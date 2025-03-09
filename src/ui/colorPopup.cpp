@@ -177,10 +177,10 @@ void colorPopup::updateAddButtonState() const
     if (m_addBtn)
     {
         if (m_colors.size() >= 7) {
-            static_cast<CCSprite*>(m_addBtn->getNormalImage())->setColor(ccColor3B(166, 166, 166));
+            static_cast<CCSprite*>(m_addBtn->getNormalImage())->setColor(ccColor3B{166, 166, 166});
             m_addBtn->setEnabled(false);
         } else {
-            static_cast<CCSprite*>(m_addBtn->getNormalImage())->setColor(ccColor3B(255, 255, 255));
+            static_cast<CCSprite*>(m_addBtn->getNormalImage())->setColor(ccColor3B{255, 255, 255});
             m_addBtn->setEnabled(true);
         }
     }
