@@ -1,0 +1,139 @@
+{
+	"geode": "4.2.0",
+	"gd": {
+		"win": "2.2074",
+		"android": "2.2074",
+		"mac": "2.2074",
+		"ios": "2.2074"
+	},
+	"id": "vanillagirl.betterpridetrails",
+	"name": "BetterPrideTrails",
+	"version": "v0.0.1",
+	"developer": "vanillagirl",
+	"description": "i hate you",
+	"tags": [
+		"offline",
+		"customization",
+		"enhancement"
+	],
+	"resources": {
+		"fonts": {
+			"JetBrainsMono": {
+				"path": "resources/JetBrainsMono-Medium.ttf",
+				"size": 64
+			}
+		}
+	},
+	"links": {
+		"source": "https://github.com/AnhNguyenlost13/better-pride-trails"
+	},
+	"settings": {
+		"fade-time": {
+			"name": "Fade Time",
+			"description": "Duration for the fade effect (in seconds).",
+			"type": "float",
+			"default": 0.3,
+			"min": 0.1,
+			"max": 1.0,
+			"controls": {
+				"slider": true,
+				"slider-step": 0.1
+			}
+		},
+		"min-seg": {
+			"name": "[Debug] Minimum Segment Length",
+			"description": "Minimum distance between points in the trail. You probably do not need to change this.",
+			"type": "float",
+			"default": 5.0,
+			"min": 0.1,
+			"max": 50.0,
+			"controls": {
+				"slider": true,
+				"slider-step": 0.1
+			}
+		},
+		"trail-width": {
+			"name": "Trail Width",
+			"description": "Width of the trail.",
+			"type": "float",
+			"default": 10.0,
+			"min": 0.1,
+			"max": 30.0,
+			"controls": {
+				"slider": true,
+				"slider-step": 0.5
+			}
+		},
+		"trail-opacity": {
+			"name": "Trail Opacity",
+			"description": "Opacity of the trail (0 = transparent, 255 = opaque).",
+			"type": "int",
+			"default": 255,
+			"min": 0,
+			"max": 255,
+			"controls": {
+				"slider": true,
+				"slider-step": 5
+			}
+		},
+		"disable-blending": {
+			"name": "Disable Blending (Experimental)",
+			"description": "please test",
+			"type": "bool",
+			"default": true
+		},
+	"preset": {
+		"name": "Preset",
+		"description": "fuuuuuck",
+		"type": "string",
+		"one-of": [
+			"Custom",
+			"Pride",
+			"Bisexual",
+			"Pansexual",
+			"Transgender",
+			"Nonbinary",
+			"Genderfluid",
+			"Genderqueer",
+			"Lesbian",
+			"Aromantic",
+			"Asexual",
+			"Agender",
+			"Demiboy",
+			"Demigirl",
+			"Demisexual",
+			"Intersex",
+			"Polysexual",
+			"Abrosexual"
+		],
+		"default": "Custom"
+	},
+		"stripe-colors": {
+			"name": "Stripe Colors",
+			"description": "A list of colors for the trail, maximum 7.",
+			"type": "custom:gaydient-colors",
+			"default": [
+				{
+					"hex": "#5BCEFA",
+					"enabled": true,
+					"userAdded": true
+				},
+				{
+					"hex": "#F5A9B8",
+					"enabled": true,
+					"userAdded": true
+				},
+				{
+					"hex": "#FFFFFF",
+					"enabled": true,
+					"userAdded": true
+				},
+				{
+					"hex": "#F5A9B8",
+					"enabled": true,
+					"userAdded": true
+				}
+			]
+		}
+	}
+}
