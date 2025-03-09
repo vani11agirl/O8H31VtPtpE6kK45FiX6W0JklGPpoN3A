@@ -1,6 +1,7 @@
 name: Build Development
 
 on:
+  workflow_dispatch:
   push:
     branches:
       - "v**"
@@ -8,6 +9,7 @@ on:
     paths:
       - "src/**"
       - "mod.json"
+      - "CMakeLists.txt"
       - ".github/workflows/uwu.yml"
   pull_request:
     branches:
