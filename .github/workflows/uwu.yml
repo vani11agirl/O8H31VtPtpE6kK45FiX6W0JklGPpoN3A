@@ -45,7 +45,7 @@ jobs:
       - name: Build the mod
         uses: geode-sdk/build-geode-mod@main
         with:
-          bindings: geode-sdk/bindings
+          bindings: kingminer7/bindings
           bindings-ref: main
           combine: true
           target: ${{ matrix.config.target }}
@@ -64,7 +64,7 @@ jobs:
       - name: Build iOS
         uses: geode-catgirls/build-geode-mod@main
         with:
-          bindings: geode-catgirls/bindings
+          bindings: kingminer7/bindings
           target: iOS
           gh-pat: ${{ secrets.GH_PAT }}
           combine: true
