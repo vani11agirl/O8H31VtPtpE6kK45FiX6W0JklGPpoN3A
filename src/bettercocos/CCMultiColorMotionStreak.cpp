@@ -1,5 +1,5 @@
 #include <Geode/cocos/textures/CCTextureCache.h>
-#include <Geode/cocos/shaders/CCGLStateCache.h>
+#include <Geode/cocos/shaders/ccGLStateCache.h>
 #include <Geode/cocos/shaders/CCGLProgram.h>
 #include <Geode/cocos/shaders/CCShaderCache.h>
 #include <Geode/cocos/base_nodes/CCNode.h>

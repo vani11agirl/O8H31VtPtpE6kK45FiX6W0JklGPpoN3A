@@ -4,7 +4,14 @@ set(CMAKE_CXX_STANDARD_REQUIRED ON)
 set(CMAKE_OSX_ARCHITECTURES "arm64;x86_64")
 set(CMAKE_CXX_VISIBILITY_PRESET hidden)
 
-project(BetterPrideTrails VERSION 1.0.0)
+if ("${GEODE_TARGET_PLATFORM}" STREQUAL "iOS" OR IOS)
+    set(CMAKE_OSX_ARCHITECTURES "arm64")
+    add_definitions(-DGLES_SILENCE_DEPRECATION)
+else()
+    set(CMAKE_OSX_ARCHITECTURES "arm64;x86_64")
+endif()
+
+project(BetterPrideTrails VERSION 4.2.0)
 
 add_library(${PROJECT_NAME} SHARED src/main.cpp
         src/hooks/PlayerObject.cpp
