@@ -9,6 +9,16 @@
 
 using namespace geode::prelude;
 
+// courtesy of jasmine, thanks <3
+unsigned int* getNumberOfDraws() {
+    #ifdef GEODE_IS_MACOS
+    static_assert(GEODE_COMP_GD_VERSION == 22074, "Please update macOS offsets");
+    return reinterpret_cast<unsigned int*>(geode::base::get() + GEODE_ARM_MAC(0x8b0f60) GEODE_INTEL_MAC(0x98bf30));
+    #else
+    return &g_uNumberOfDraws;
+    #endif
+}
+
 CCMultiColorMotionStreak::CCMultiColorMotionStreak()
 : m_verticesPerPoint(5), // default to 5 stripes; set via setStripeColors()
   m_blendingEnabled(false)
@@ -195,5 +205,5 @@ void CCMultiColorMotionStreak::draw() {
         glDrawArrays(GL_TRIANGLE_STRIP, 0, static_cast<GLsizei>(stripVertices.size()));
     }
 
-    CC_INCREMENT_GL_DRAWS(1);
+    *getNumberOfDraws() += 1;
 }
