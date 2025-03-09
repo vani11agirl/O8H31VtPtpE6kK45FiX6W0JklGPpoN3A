@@ -13,23 +13,10 @@ endif()
 
 project(BetterPrideTrails VERSION 4.2.0)
 
-add_library(${PROJECT_NAME} SHARED src/main.cpp
-        src/hooks/PlayerObject.cpp
-        src/bettercocos/CCMultiColorMotionStreak.cpp
-        src/bettercocos/CCMultiColorMotionStreak.h
-        src/utils/color.h
-        src/utils/color.cpp
-        src/utils/customSettings.cpp
-        src/utils/customSettings.h
-        src/colorTypes.h
-        src/ui/colorPopup.cpp
-        src/ui/colorPopup.h
-        src/ui/colorCell.cpp
-        src/ui/colorCell.h
-        src/ui/GrabNodeLayer.cpp
-        src/ui/GrabNodeLayer.h
-        # src/main.hpp
+file(GLOB_RECURSE SOURCES
+    src/*.cpp
 )
+add_library(${PROJECT_NAME} SHARED ${SOURCES})
 
 if (NOT DEFINED ENV{GEODE_SDK})
     message(FATAL_ERROR "Unable to find Geode SDK! Please define GEODE_SDK environment variable to point to Geode")

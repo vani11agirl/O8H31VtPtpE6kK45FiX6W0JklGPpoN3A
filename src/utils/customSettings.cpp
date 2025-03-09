@@ -5,9 +5,9 @@
 #include <Geode/cocos/base_nodes/CCNode.h>
 
 #include <utility>
-#include "customSettings.h"
+#include "customSettings.hpp"
 
-#include "../ui/colorPopup.h"
+#include "../ui/ColorPopup.hpp"
 
 using namespace geode::prelude;
 
@@ -54,16 +54,16 @@ bool ColorListSettingNode::init(std::shared_ptr<ColorListSetting> setting, float
 
     handleTouchPriority(this);
 
+    updateState(nullptr);
+
     return true;
 }
 
 void ColorListSettingNode::onView(cocos2d::CCObject *) {
     auto setting = this->getSetting();
-    colorPopup::create(
-            setting->getValue().colors,
-            [this](std::vector<ColorEntry> colors) {
-                this->setValue(ColorList{std::move(colors)}, this);
-            }
+    ColorPopup::create(
+            getValue().colors,
+            this
     )->show();
 }
 

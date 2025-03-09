@@ -1,8 +1,7 @@
 #include <Geode/Geode.hpp>
 
 #include <Geode/modify/PlayLayer.hpp>
-#include "utils/utils.hpp"
-#include "utils/customSettings.h"
+#include "utils/customSettings.hpp"
 
 // where's my estrogen pills 
 // i need them now

@@ -5,7 +5,7 @@
 #include <Geode/cocos/base_nodes/CCNode.h>
 #include <Geode/cocos/support/CCVertex.h>
 #include <Geode/cocos/support/CCPointExtension.h>
-#include "CCMultiColorMotionStreak.h"
+#include "CCMultiColorMotionStreak.hpp"
 
 using namespace geode::prelude;
 

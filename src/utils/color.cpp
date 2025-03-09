@@ -2,7 +2,7 @@
 // Created by transgendercat on 3/5/2025.
 //
 
-#include "../utils/color.h"
+#include "../utils/color.hpp"
 namespace custom::utils::color {
     ccColor3B ColorUtils::hsvToRgb(const ccHSVValue& hsv) {
         const float hue = hsv.h;

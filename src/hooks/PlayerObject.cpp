@@ -1,4 +1,4 @@
-#include "../bettercocos/CCMultiColorMotionStreak.h"
+#include "../bettercocos/CCMultiColorMotionStreak.hpp"
 #include <Geode/modify/PlayerObject.hpp>
 #include <Geode/Geode.hpp>
 #include "../utils/utils.hpp"

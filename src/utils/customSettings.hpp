@@ -5,7 +5,7 @@
 #ifndef CUSTOMSETTINGS_H
 #define CUSTOMSETTINGS_H
 #include <Geode/Geode.hpp>
-#include "../colorTypes.h"
+#include "../colorTypes.hpp"
 
 using namespace geode::prelude;
 
@@ -20,6 +20,7 @@ public:
     SettingNodeV3 *createNode(float width) override;
 };
 
+// No idea why there's a warning here.
 class ColorListSettingNode : public SettingValueNodeV3<ColorListSetting> {
 protected:
     CCMenuItemSpriteExtra* m_resetBtn;

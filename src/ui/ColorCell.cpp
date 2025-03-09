@@ -2,27 +2,19 @@
 // Created by transgendercat on 3/5/2025.
 //
 
-#include "colorCell.h"
-#include "../utils/color.h"
+#include "ColorCell.hpp"
+#include "../utils/color.hpp"
 
 #include <Geode/ui/TextInput.hpp>
 #include <Geode/binding/CCMenuItemSpriteExtra.hpp>
-#include <utility>
 
-#include "colorPopup.h"
-#include "GrabNodeLayer.h" // Thanks TheSillyDoggo, once again.
+#include "ColorPopup.hpp"
+#include "GrabNodeLayer.hpp" // Thanks TheSillyDoggo, once again.
 
 using namespace geode::prelude;
 using namespace custom::utils::color;
 
-bool colorCell::init(
-    colorPopup *parent_popup,
-    ColorEntry *entry,
-    std::function<void()> onDelete,
-    std::function<void()> onColorPicker,
-    std::function<void(ccColor4B const& color)> updateColor, // I'm gonna eat someone
-    const CCSize &size
-    )
+bool ColorCell::init(ColorPopup *parent_popup, ColorEntry *entry, const CCSize &size, int index)
 {
     if (!CCNode::init()) return false;
 
@@ -30,11 +22,8 @@ bool colorCell::init(
 
     m_parentPopup = parent_popup;
     m_entry = entry;
-    m_onDelete = std::move(onDelete);
-
-    // TODO: Properly figure this out, updateColor() never got called
-    m_onColorPicker = std::move(onColorPicker);
-    m_updateColor = std::move(updateColor);
+    m_index = index;
+    m_originalHex = m_entry->m_hex;
 
     auto entryColor = ColorUtils::hexToColor3B(m_entry->m_hex);
 
@@ -52,22 +41,9 @@ bool colorCell::init(
 
     float m_buttonSize = 0.f;
 
-    // m_toggler = CCMenuItemToggler::createWithStandardSprites(
-    //     this,
-    //     menu_selector(colorCell::onToggle),
-    //     .6f
-    //     );
-    // m_toggler->setAnchorPoint(ccp(.5f, .5f));
-    //
-    // m_buttonSize += m_toggler->getContentWidth();
-
     auto btnsMenu = CCMenu::create();
-    // btnsMenu->addChild(m_toggler);
     btnsMenu->setAnchorPoint(ccp(1.f, .5f));
     btnsMenu->setContentSize(CCSize(50.f, 30.f));
-
-    // Always true
-    // if (m_entry->m_userAdded) {
 
     /* * * * * * * * *
      * Delete Button *
@@ -79,7 +55,7 @@ bool colorCell::init(
     auto deleteBtn = CCMenuItemSpriteExtra::create(
         deleteIcon,
         this,
-        menu_selector(colorCell::onDelete)
+        menu_selector(ColorCell::onDelete)
         );
 
     deleteBtn->setID("delete-btn"_spr);
@@ -90,20 +66,18 @@ bool colorCell::init(
     /* * * * * * * * * * * *
      * Color Picker Button *
      * * * * * * * * * * * */
-    // TODO: Have a crack at trying to fix it if you want, I give up trying to.
-    // auto paintBtn = CCSprite::createWithSpriteFrameName("GJ_paintBtn_001.png");
-    // paintBtn->setScale(.7f);
-
-    // auto colorPickerBtn = CCMenuItemSpriteExtra::create(
-    //     paintBtn,
-    //     this,
-    //     menu_selector(colorCell::onColorPicker)
-    //     );
-    //
-    // colorPickerBtn->setID("color-picker"_spr);
-    // btnsMenu->addChild(colorPickerBtn);
-    //
-    // m_buttonSize += colorPickerBtn->getContentWidth();
+    auto paintSpr = CCSprite::createWithSpriteFrameName("GJ_paintBtn_001.png");
+    paintSpr->setScale(.7f);
+    auto colorPickerBtn = CCMenuItemSpriteExtra::create(
+        paintSpr,
+        this,
+        menu_selector(ColorCell::onColorPicker)
+        );
+    
+    colorPickerBtn->setID("color-picker"_spr);
+    btnsMenu->addChild(colorPickerBtn);
+    
+    m_buttonSize += colorPickerBtn->getContentWidth();
 
     // } endif
 
@@ -152,9 +126,6 @@ bool colorCell::init(
                 {
                     bgSprite->setColor(newColor);
                 }
-                else
-                {
-                }
             }
         }
     );
@@ -177,27 +148,46 @@ bool colorCell::init(
     return true;
 }
 
-void colorCell::onDelete(CCObject*)
-{
-    m_onDelete();
+void ColorCell::onDelete(CCObject*) {
+    auto originalHex = m_originalHex;
+    auto it = std::ranges::find_if(m_parentPopup->m_colors, [originalHex](const ColorEntry& e) {
+        return e.m_hex == originalHex;
+    });
+    if (it != m_parentPopup->m_colors.end())
+    {
+        m_parentPopup->m_colors.erase(it);
+    }
+    else
+    {
+        log::error("Oops...");
+    }
+    m_parentPopup->createList();
+    m_parentPopup->updateAddButtonState(); // Update the add button state after deletion
 }
 
-void colorCell::onColorPicker(CCObject*)
+void ColorCell::onColorPicker(CCObject*)
 {
-    m_onColorPicker();
+    auto p = ColorPickPopup::create(custom::utils::color::ColorUtils::hexToColor3B(m_originalHex));
+    p->setDelegate(this);
+    p->setID("colorPicker"_spr);
+    p->show();
 }
 
-void colorCell::updateColor(ccColor4B const& color)
+void ColorCell::updateColor(ccColor4B const& color)
 {
-    log::debug("I would hug you if you could make this line of log appear");
-    m_updateColor(color);
+    ccColor3B newColor = { color.r, color.g, color.b };
+    if (m_index < m_parentPopup->m_colors.size()) {
+        m_parentPopup->m_colors[m_index].m_hex = custom::utils::color::ColorUtils::color3BToHex(newColor);
+    } else {
+    }
+    m_parentPopup->createList();
 }
 
 
-colorCell* colorCell::create(colorPopup* parent_popup, ColorEntry* entry, std::function<void()> onDelete, std::function<void()> onColorPicker, std::function<void(ccColor4B const& color)> updateColor, CCSize const& size)
+ColorCell* ColorCell::create(ColorPopup* parent_popup, ColorEntry* entry, CCSize const& size, int index)
 {
-    auto ret = new colorCell();
-    if (ret->init(parent_popup, entry, std::move(onDelete), std::move(onColorPicker), std::move(updateColor), size))
+    auto ret = new ColorCell();
+    if (ret->init(parent_popup, entry, size, index))
     {
         ret->autorelease();
         return ret;
@@ -206,4 +196,16 @@ colorCell* colorCell::create(colorPopup* parent_popup, ColorEntry* entry, std::f
     log::error("what the sigma");
     CC_SAFE_DELETE(ret);
     return nullptr;
+}
+
+ColorEntry* ColorCell::getEntry() {
+    return m_entry;
+}
+
+int ColorCell::getIndex() {
+    return m_index;
+}
+
+std::string ColorCell::getOriginalHex() {
+    return m_originalHex;
 }
