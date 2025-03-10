@@ -3,5 +3,9 @@
   <component name="VcsDirectoryMappings">
     <mapping directory="" vcs="Git" />
     <mapping directory="$PROJECT_DIR$/cmake-build-debug/_deps/bindings-src" vcs="Git" />
+    <mapping directory="$USER_HOME$/cache/fmt/cccb77ae9609d2768ed80dd42cec54f77b1f1455" vcs="Git" />
+    <mapping directory="$USER_HOME$/cache/json/dbc884f9fcebaf645c7ae9ce79261d1aba0bb13b" vcs="Git" />
+    <mapping directory="$USER_HOME$/cache/result/a5380f9e23f94b98200baa461086514f602899cb" vcs="Git" />
+    <mapping directory="$USER_HOME$/cache/tuliphook/8d0d2aa407f52cdee9f79187fca5c9affddf8dd5" vcs="Git" />
   </component>
 </project>

@@ -24,6 +24,7 @@ protected:
     ColorEntry* m_entry;
     int m_index;
     std::string m_originalHex;
+    std::vector<CCNode*> m_cells;
 
     bool init(ColorPopup* parentPopup, ColorEntry* entry, CCSize const& size, int index);
 

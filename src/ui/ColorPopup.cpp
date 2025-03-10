@@ -28,7 +28,7 @@ bool ColorPopup::setup(std::vector<ColorEntry> colors, ColorListSettingNode *set
         Anchor::BottomRight,
         {-5.f - m_addBtn->getContentWidth() / 2.f, 8.f + m_addBtn->getContentHeight() / 2.f}
     );
-    this->updateAddButtonState(); // Update the add button state initially
+    this->updateAddButtonState();
     return true;
 }
 
@@ -88,7 +88,7 @@ void ColorPopup::onAdd(CCObject*)
 {
     m_colors.emplace_back("#FFFFFF", true, true);
     this->createList();
-    this->updateAddButtonState(); // Update the add button state after adding
+    this->updateAddButtonState();
 }
 
 

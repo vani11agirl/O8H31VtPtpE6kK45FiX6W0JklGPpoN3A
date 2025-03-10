@@ -22,7 +22,10 @@
 				"path": "resources/JetBrainsMono-Medium.ttf",
 				"size": 64
 			}
-		}
+		},
+		"sprites": [
+			"resources/*.png"
+		]
 	},
 	"links": {
 		"source": "https://github.com/AnhNguyenlost13/better-pride-trails"

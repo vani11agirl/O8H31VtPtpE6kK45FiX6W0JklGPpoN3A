@@ -94,7 +94,42 @@ bool ColorCell::init(ColorPopup *parent_popup, ColorEntry *entry, const CCSize &
         this->setZOrder(CCScene::get()->getHighestChildZ());
     });
     // TODO: idk
-    // grabNodeLayer->setOnEndDrag()
+    grabNodeLayer->setOnEndDrag([this, index, bg, entryColor] {
+        this->runAction(CCEaseBackOut::create(CCScaleTo::create(0.35f, 1.0f)));
+        bg->runAction(CCTintTo::create(0.35f, entryColor.r, entryColor.g, entryColor.b));
+
+        std::sort(m_cells.begin(), m_cells.end(), [](CCNode* a, CCNode* b) {
+            return a->getPositionY() > b->getPositionY();
+        });
+
+        int newIndex = 0;
+        for (size_t i = 0; i < m_cells.size(); i++) {
+            if (m_cells[i] == this) {
+                newIndex = static_cast<int>(i);
+                break;
+            }
+        }
+        log::debug("Dragged cell moved from index {} to index {}", index, newIndex);
+
+        std::swap(m_parentPopup->m_colors[index], m_parentPopup->m_colors[newIndex]);
+
+        for (size_t i = 0; i < m_cells.size(); i++) {
+            if (auto cell = dynamic_cast<ColorCell*>(m_cells[i])) {
+                cell->m_index = static_cast<int>(i);
+            }
+        }
+        
+        m_parentPopup->createList();
+    });
+
+    grabNodeLayer->setContentSize(ccp(this->getContentHeight() / .7f, this->getContentWidth() / .7f));
+    grabNodeLayer->setPosition(bg->getPosition());
+    grabNodeLayer->setID("node-grabber"_spr);
+
+    auto grabSpr = CCSprite::create("draggable.png"_spr);
+    grabSpr->setPosition(grabNodeLayer->getPosition());
+    grabSpr->setScale(.6f);
+    btnsMenu->addChild(grabSpr);
 
     btnsMenu->setLayout(
         RowLayout::create()
@@ -134,6 +169,7 @@ bool ColorCell::init(ColorPopup *parent_popup, ColorEntry *entry, const CCSize &
     auto menu = CCMenu::create();
     menu->addChild(input_node);
     menu->addChild(btnsMenu);
+    menu->addChild(grabNodeLayer);
 
     menu->setLayout(RowLayout::create()
         ->setGap(5.f)
@@ -146,11 +182,14 @@ bool ColorCell::init(ColorPopup *parent_popup, ColorEntry *entry, const CCSize &
 
     this->addChildAtPosition(menu, Anchor::Center, ccp(.0f, .0f));
 
+    m_cells.push_back(this);
+
     return true;
 }
 
 void ColorCell::onDelete(CCObject*) {
-    if (m_parentPopup->m_colors.size() == 1) return FLAlertLayer::create("Error", "You must have at least one color!", "OK")->show();
+    if (m_parentPopup->m_colors.size() == 1) return FLAlertLayer::create("Hello...?", "Y-you can't have <cr>no colors</c> at all~", "Okay")->show();
+
     auto originalHex = m_originalHex;
     auto it = std::ranges::find_if(m_parentPopup->m_colors, [originalHex](const ColorEntry& e) {
         return e.m_hex == originalHex;
@@ -169,7 +208,7 @@ void ColorCell::onDelete(CCObject*) {
 
 void ColorCell::onColorPicker(CCObject*)
 {
-    auto p = ColorPickPopup::create(custom::utils::color::ColorUtils::hexToColor3B(m_originalHex));
+    auto p = ColorPickPopup::create(ColorUtils::hexToColor3B(m_originalHex));
     p->setDelegate(this);
     p->setID("colorPicker"_spr);
     p->show();
@@ -179,7 +218,7 @@ void ColorCell::updateColor(ccColor4B const& color)
 {
     ccColor3B newColor = { color.r, color.g, color.b };
     if (m_index < m_parentPopup->m_colors.size()) {
-        m_parentPopup->m_colors[m_index].m_hex = custom::utils::color::ColorUtils::color3BToHex(newColor);
+        m_parentPopup->m_colors[m_index].m_hex = ColorUtils::color3BToHex(newColor);
     } else {
     }
     m_parentPopup->createList();
