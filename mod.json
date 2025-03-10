@@ -101,15 +101,13 @@
 			"Agender",
 			"Demiboy",
 			"Demigirl",
-			"Demisexual",
-			"Intersex",
 			"Polysexual",
 			"Abrosexual"
 		],
 		"default": "Custom"
 	},
 		"stripe-colors": {
-			"name": "Stripe Colors",
+			"name": "(Custom) Stripe Colors",
 			"description": "A list of colors for the trail, maximum 7.",
 			"type": "custom:gaydient-colors",
 			"default": [

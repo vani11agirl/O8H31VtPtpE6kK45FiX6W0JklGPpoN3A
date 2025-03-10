@@ -40,10 +40,11 @@ CCMultiColorMotionStreak* CCMultiColorMotionStreak::create(
     CCTexture2D* texture,
     bool disableBlending
 ) {
+    std::vector<ccColor3B> reversedColors(colors.rbegin(), colors.rend());
     CCTexture2D* finalTexture = texture;
     if (disableBlending) {
         std::vector<GLubyte> texData;
-        for (const auto& color : colors) {
+        for (const auto& color : reversedColors) {
             texData.push_back(color.r);
             texData.push_back(color.g);
             texData.push_back(color.b);
@@ -53,9 +54,9 @@ CCMultiColorMotionStreak* CCMultiColorMotionStreak::create(
         stripeTexture->initWithData(
             texData.data(),
             kCCTexture2DPixelFormat_RGBA8888,
-            static_cast<unsigned int>(colors.size()),
+            static_cast<unsigned int>(reversedColors.size()),
             1,
-            CCSize(static_cast<float>(colors.size()), 1)
+            CCSize(static_cast<float>(reversedColors.size()), 1)
         );
         ccTexParams texParams = {GL_NEAREST, GL_NEAREST, GL_CLAMP_TO_EDGE, GL_CLAMP_TO_EDGE};
         stripeTexture->setTexParameters(&texParams);
