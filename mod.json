@@ -10,7 +10,7 @@
 	"name": "Geometrail",
 	"version": "v0.0.1",
 	"developers": ["vanillagirl", "km7dev"],
-	"description": "i hate you",
+	"description": "celestrail port for gd real",
 	"tags": [
 		"offline",
 		"customization",
@@ -30,7 +30,7 @@
 	"settings": {
 		"fade-time": {
 			"name": "Fade Time",
-			"description": "Duration for the fade effect (in seconds).",
+			"description": "Duration for the fade effect (in seconds). This is also the trail length until I properly work on it.",
 			"type": "float",
 			"default": 0.3,
 			"min": 0.1,
@@ -54,7 +54,7 @@
 		},
 		"trail-width": {
 			"name": "Trail Width",
-			"description": "Width of the trail.",
+			"description": "Width of the trail. Currently doesn't work properly",
 			"type": "float",
 			"default": 10.0,
 			"min": 0.1,
@@ -78,13 +78,13 @@
 		},
 		"disable-blending": {
 			"name": "Disable Blending (Experimental)",
-			"description": "please test",
+			"description": "Attemps to disable blending by changing the blending algorithm.",
 			"type": "bool",
 			"default": true
 		},
 	"preset": {
 		"name": "Preset",
-		"description": "fuuuuuck",
+		"description": "Some pride flag presets, yea.",
 		"type": "string",
 		"one-of": [
 			"Custom",
@@ -110,6 +110,8 @@
 			"name": "(Custom) Stripe Colors",
 			"description": "A list of colors for the trail, maximum 7.",
 			"type": "custom:gaydient-colors",
+			"enable-if": "saved:enable-custom",
+			"enable-if-description": "Set the preset as custom first.",
 			"default": [
 				{
 					"hex": "#5BCEFA",
