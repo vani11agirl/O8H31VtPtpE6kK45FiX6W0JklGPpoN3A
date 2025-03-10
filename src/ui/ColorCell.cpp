@@ -150,6 +150,7 @@ bool ColorCell::init(ColorPopup *parent_popup, ColorEntry *entry, const CCSize &
 }
 
 void ColorCell::onDelete(CCObject*) {
+    if (m_parentPopup->m_colors.size() == 1) return FLAlertLayer::create("Error", "You must have at least one color!", "OK")->show();
     auto originalHex = m_originalHex;
     auto it = std::ranges::find_if(m_parentPopup->m_colors, [originalHex](const ColorEntry& e) {
         return e.m_hex == originalHex;
