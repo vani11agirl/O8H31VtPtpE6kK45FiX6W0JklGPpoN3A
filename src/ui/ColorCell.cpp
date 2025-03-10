@@ -108,6 +108,7 @@ bool ColorCell::init(ColorPopup *parent_popup, ColorEntry *entry, const CCSize &
     auto input_node = TextInput::create(
         size.width - HORIZONTAL_PADDING * 2 - m_buttonSize,
         "Color Hex Code",
+        // @geode-ignore(unknown-resource)
         "JetBrainsMono.fnt"_spr
     );
     input_node->setScale(1.f);
