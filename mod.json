@@ -9,7 +9,7 @@
 	"id": "vanillagirl.geometrail",
 	"name": "Geometrail",
 	"version": "v0.0.1",
-	"developer": "vanillagirl",
+	"developers": ["vanillagirl", "km7dev"],
 	"description": "i hate you",
 	"tags": [
 		"offline",
