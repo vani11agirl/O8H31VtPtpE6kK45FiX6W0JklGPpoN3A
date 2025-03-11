@@ -19,16 +19,48 @@ bool ColorPopup::setup(std::vector<ColorEntry> colors, ColorListSettingNode *set
     );
     m_addBtn->setAnchorPoint({0.5, 0.5});
     m_addBtn->setID("addBtn"_spr);
-    auto menu = CCMenu::create();
-    menu->addChild(m_addBtn);
-    menu->setZOrder(1);
-    menu->setID("menu"_spr);
-    m_mainLayer->addChildAtPosition(
-        menu,
+    // auto menu = CCMenu::create();
+    // menu->addChild(m_addBtn);
+    // menu->setZOrder(1);
+    // menu->setID("menu"_spr);
+    m_buttonMenu->addChildAtPosition(
+        m_addBtn,
         Anchor::BottomRight,
         {-5.f - m_addBtn->getContentWidth() / 2.f, 8.f + m_addBtn->getContentHeight() / 2.f}
     );
     this->updateAddButtonState();
+
+    // [Presets] with transgender flag background
+    // auto tPresetSprite = ButtonSprite::create("Presets", "bigFont.fnt", "geode.loader/GE_button_04.png");
+    // tPresetSprite->setScale(.7f);
+    // m_tPresetBtn = CCMenuItemSpriteExtra::create(
+    //     tPresetSprite,
+    //     this,
+    //     nullptr
+    //     );
+    // m_tPresetBtn->setID("colon-three");
+    // m_buttonMenu->addChildAtPosition(
+    //     m_tPresetBtn,
+    //     Anchor::BottomLeft,
+    //     {5.f + m_tPresetBtn->getContentWidth() / 2.f, 8.f + m_tPresetBtn->getContentHeight() / 2.f}
+    // );
+
+    // [*] button real! I still can't decide...
+    auto presetSprite = CCSprite::createWithSpriteFrameName("GJ_starBtn_001.png");
+    presetSprite->setScale(.7f);
+    m_presetBtn = CCMenuItemSpriteExtra::create(
+        presetSprite,
+        this,
+        nullptr
+        );
+    m_presetBtn->setAnchorPoint({0.5f, 0.5f});
+    m_presetBtn->setID("preset-button");
+    m_buttonMenu->addChildAtPosition(
+        m_presetBtn,
+        Anchor::BottomLeft,
+{5.f + m_tPresetBtn->getContentWidth() / 2.f, 8.f + m_tPresetBtn->getContentHeight() / 2.f}
+        );
+
     return true;
 }
 
@@ -91,6 +123,12 @@ void ColorPopup::onAdd(CCObject*)
     this->updateAddButtonState();
 }
 
+void ColorPopup::onPresets(CCObject*)
+{
+    // TODO: the actual damn popup
+    // I just felt like wearing feminine clothing
+    return;
+}
 
 ColorPopup* ColorPopup::create(std::vector<ColorEntry> colors, ColorListSettingNode *setting)
 {
