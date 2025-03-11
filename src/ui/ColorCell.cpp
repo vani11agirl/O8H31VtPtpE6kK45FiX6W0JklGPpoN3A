@@ -93,42 +93,53 @@ bool ColorCell::init(ColorPopup *parent_popup, ColorEntry *entry, const CCSize &
         bg->runAction(CCTintTo::create(.35f, entryColor.r - 100, entryColor.g - 100, entryColor.b - 100)); // idk
         this->setZOrder(CCScene::get()->getHighestChildZ());
     });
-    // TODO: idk
-    grabNodeLayer->setOnEndDrag([this, index, bg, entryColor] {
+
+    // FIXME: Dragged entries always revert back to the first place
+    grabNodeLayer->setOnEndDrag([this, bg, entryColor] {
+        this->getParent()->updateLayout();
         this->runAction(CCEaseBackOut::create(CCScaleTo::create(0.35f, 1.0f)));
         bg->runAction(CCTintTo::create(0.35f, entryColor.r, entryColor.g, entryColor.b));
 
-        std::sort(m_cells.begin(), m_cells.end(), [](CCNode* a, CCNode* b) {
-            return a->getPositionY() > b->getPositionY();
+        std::vector<std::pair<ColorCell*, float>> sortedCells;
+        for (auto cell : m_cells) {
+            float worldY = cell->getParent()->convertToWorldSpace(cell->getPosition()).y;
+            sortedCells.emplace_back(static_cast<ColorCell*>(cell), worldY);
+        }
+
+
+        std::sort(sortedCells.begin(), sortedCells.end(), [](auto& a, auto& b) {
+            return a.second > b.second; // Ensure higher Y comes first
         });
 
         int newIndex = 0;
-        for (size_t i = 0; i < m_cells.size(); i++) {
-            if (m_cells[i] == this) {
+        for (size_t i = 0; i < sortedCells.size(); i++) {
+            if (sortedCells[i].first == this) {
                 newIndex = static_cast<int>(i);
                 break;
             }
         }
-        log::debug("Dragged cell moved from index {} to index {}", index, newIndex);
 
-        std::swap(m_parentPopup->m_colors[index], m_parentPopup->m_colors[newIndex]);
+        log::debug("Dragged cell moved from index {} to index {}", m_index, newIndex);
 
-        for (size_t i = 0; i < m_cells.size(); i++) {
-            if (auto cell = dynamic_cast<ColorCell*>(m_cells[i])) {
-                cell->m_index = static_cast<int>(i);
-            }
+        std::swap(m_parentPopup->m_colors[m_index], m_parentPopup->m_colors[newIndex]);
+
+        for (size_t i = 0; i < sortedCells.size(); i++) {
+            sortedCells[i].first->setPositionY(sortedCells[i].second);
+            sortedCells[i].first->m_index = static_cast<int>(i);
         }
-        
+
         m_parentPopup->createList();
     });
 
-    grabNodeLayer->setContentSize(ccp(this->getContentHeight() / .7f, this->getContentWidth() / .7f));
-    grabNodeLayer->setPosition(bg->getPosition());
+    grabNodeLayer->setContentSize(ccp(this->getContentHeight() - 2, this->getContentHeight() - 2));
+    grabNodeLayer->setScale(.5f, 1.f);
+    grabNodeLayer->setLayoutOptions(AnchorLayoutOptions::create()->setAnchor(Anchor::Right)->setOffset(ccp(-10, 0)));
     grabNodeLayer->setID("node-grabber"_spr);
 
     auto grabSpr = CCSprite::create("draggable.png"_spr);
     grabSpr->setPosition(grabNodeLayer->getPosition());
     grabSpr->setScale(.6f);
+    grabSpr->setOpacity(200);
     btnsMenu->addChild(grabSpr);
 
     btnsMenu->setLayout(
@@ -169,7 +180,7 @@ bool ColorCell::init(ColorPopup *parent_popup, ColorEntry *entry, const CCSize &
     auto menu = CCMenu::create();
     menu->addChild(input_node);
     menu->addChild(btnsMenu);
-    menu->addChild(grabNodeLayer);
+    this->addChild(grabNodeLayer);
 
     menu->setLayout(RowLayout::create()
         ->setGap(5.f)
@@ -180,7 +191,9 @@ bool ColorCell::init(ColorPopup *parent_popup, ColorEntry *entry, const CCSize &
     menu->setContentSize(CCSize{size.width - HORIZONTAL_PADDING * 2, size.height});
     menu->updateLayout();
 
+
     this->addChildAtPosition(menu, Anchor::Center, ccp(.0f, .0f));
+    grabNodeLayer->getParent()->updateLayout();
 
     m_cells.push_back(this);
 

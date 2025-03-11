@@ -21,7 +21,7 @@ class ColorPopup : public Popup<std::vector<ColorEntry>, ColorListSettingNode*> 
         ScrollLayer *m_scrollLayer;
         CCMenuItemSpriteExtra* m_addBtn;
         CCMenuItemSpriteExtra* m_presetBtn;
-        CCMenuItemSpriteExtra* m_tPresetBtn;
+        // CCMenuItemSpriteExtra* m_tPresetBtn;
         ColorListSettingNode *m_setting;
 
         bool setup(std::vector<ColorEntry> colors, ColorListSettingNode *setting) override;

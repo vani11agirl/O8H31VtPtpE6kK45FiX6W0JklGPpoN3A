@@ -58,7 +58,7 @@ bool ColorPopup::setup(std::vector<ColorEntry> colors, ColorListSettingNode *set
     m_buttonMenu->addChildAtPosition(
         m_presetBtn,
         Anchor::BottomLeft,
-{5.f + m_tPresetBtn->getContentWidth() / 2.f, 8.f + m_tPresetBtn->getContentHeight() / 2.f}
+{5.f + m_presetBtn->getContentWidth() / 2.f, 8.f + m_presetBtn->getContentHeight() / 2.f}
         );
 
     return true;
