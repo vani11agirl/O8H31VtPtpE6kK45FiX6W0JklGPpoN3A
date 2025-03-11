@@ -96,10 +96,9 @@ void GrabNodeLayer::ccTouchMoved(CCTouch *pTouch, CCEvent *pEvent)
 
 void GrabNodeLayer::ccTouchEnded(CCTouch *pTouch, CCEvent *pEvent)
 {
+    float dragDistance = ccpDistance(pTouch->getLocation(), pTouch->getStartLocation());
     isDragging = false;
-
-    if (onEndDrag)
-        onEndDrag();
+    if (onEndDrag) onEndDrag();
 }
 
 void GrabNodeLayer::ccTouchCancelled(CCTouch *pTouch, CCEvent *pEvent)

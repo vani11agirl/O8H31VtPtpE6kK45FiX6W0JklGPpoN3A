@@ -101,15 +101,16 @@ void ColorPopup::createList()
         m_scrollLayer->m_contentLayer->addChild(cell);
         m_colorCells.push_back(cell);
     }
-    auto menu2 = CCMenu::create();
-    menu2->setContentSize({0.f, 36.f});
-    m_scrollLayer->m_contentLayer->addChild(menu2);
     m_scrollLayer->m_contentLayer->updateLayout();
     m_scrollLayer->m_contentLayer->setID("content-layer"_spr);
     this->m_mainLayer->addChild(m_scrollLayer);
     handleTouchPriority(this);
 }
 
+CCSize ColorPopup::getScrollLayerContentSize() const
+{
+    return m_scrollLayer->m_contentLayer->getContentSize();
+}
 void ColorPopup::onClose(CCObject *sender)
 {
     m_setting->setValue(ColorList{m_colors}, m_setting);

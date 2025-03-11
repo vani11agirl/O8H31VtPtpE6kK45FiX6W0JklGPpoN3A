@@ -23,6 +23,7 @@ protected:
     ColorPopup* m_parentPopup;
     ColorEntry* m_entry;
     int m_index;
+    float m_initialDragY;
     std::string m_originalHex;
     std::vector<CCNode*> m_cells;
 
@@ -33,9 +34,10 @@ public:
     void onDelete(CCObject*);
     void onColorPicker(CCObject*);
     void updateColor(ccColor4B const& color) override;
+    void setIndex(int index);
 
-    ColorEntry *getEntry();
-    int getIndex();
+    ColorEntry *getEntry() const;
+    int getIndex() const;
     std::string getOriginalHex();
 };
 

@@ -14,7 +14,7 @@
 using namespace geode::prelude;
 using namespace custom::utils::color;
 
-bool ColorCell::init(ColorPopup *parent_popup, ColorEntry *entry, const CCSize &size, int index)
+bool ColorCell::init(ColorPopup *parent_popup, ColorEntry *entry, const CCSize &size, const int index)
 {
     if (!CCNode::init()) return false;
 
@@ -87,45 +87,55 @@ bool ColorCell::init(ColorPopup *parent_popup, ColorEntry *entry, const CCSize &
     auto grabNodeLayer = GrabNodeLayer::create();
     grabNodeLayer->setNodeToGrab(this);
     grabNodeLayer->setLockedAxis(LockedAxis::Vertical);
-    grabNodeLayer->setOnStartDrag([this, bg, entryColor]
-    {
-        this->runAction(CCEaseInOut::create(CCScaleTo::create(.2f, .95f), 2));
-        bg->runAction(CCTintTo::create(.35f, entryColor.r - 100, entryColor.g - 100, entryColor.b - 100)); // idk
+    grabNodeLayer->setOnStartDrag([this, bg, entryColor] {
+        this->m_initialDragY = this->getPositionY();
+        this->runAction(CCEaseInOut::create(CCScaleTo::create(0.2f, 0.95f), 2));
+        bg->runAction(CCTintTo::create(0.35f, entryColor.r - 100, entryColor.g - 100, entryColor.b - 100));
         this->setZOrder(CCScene::get()->getHighestChildZ());
     });
 
-    // FIXME: Dragged entries always revert back to the first place
+    // FIXME: Game may or may not explode
     grabNodeLayer->setOnEndDrag([this, bg, entryColor] {
-        this->getParent()->updateLayout();
         this->runAction(CCEaseBackOut::create(CCScaleTo::create(0.35f, 1.0f)));
         bg->runAction(CCTintTo::create(0.35f, entryColor.r, entryColor.g, entryColor.b));
 
-        std::vector<std::pair<ColorCell*, float>> sortedCells;
-        for (auto cell : m_cells) {
-            float worldY = cell->getParent()->convertToWorldSpace(cell->getPosition()).y;
-            sortedCells.emplace_back(static_cast<ColorCell*>(cell), worldY);
+        float deltaY = m_initialDragY - this->getPositionY();
+        float blockHeight = 35.0f + 2.5f;
+
+        if (fabs(deltaY) < 5.0f) {
+            m_parentPopup->createList();
+            return;
         }
 
+        int deltaIndex = static_cast<int>(round(deltaY / blockHeight));
+        int count = m_parentPopup->m_colorCells.size();
+        int origIndex = m_index;
+        int newIndex = origIndex + deltaIndex;
 
-        std::sort(sortedCells.begin(), sortedCells.end(), [](auto& a, auto& b) {
-            return a.second > b.second; // Ensure higher Y comes first
-        });
+        if (newIndex < 0) newIndex = 0;
+        if (newIndex >= count) newIndex = count - 1;
 
-        int newIndex = 0;
-        for (size_t i = 0; i < sortedCells.size(); i++) {
-            if (sortedCells[i].first == this) {
-                newIndex = static_cast<int>(i);
-                break;
-            }
+        log::debug("Dragged cell moved from index {} to index {}", origIndex, newIndex);
+
+        if (newIndex == origIndex) {
+            m_parentPopup->createList();
+            return;
         }
 
-        log::debug("Dragged cell moved from index {} to index {}", m_index, newIndex);
+        auto& cells = m_parentPopup->m_colorCells;
+        auto& colors = m_parentPopup->m_colors;
 
-        std::swap(m_parentPopup->m_colors[m_index], m_parentPopup->m_colors[newIndex]);
+        if (origIndex < newIndex) {
+            std::rotate(cells.begin() + origIndex, cells.begin() + origIndex + 1, cells.begin() + newIndex + 1);
+            std::rotate(colors.begin() + origIndex, colors.begin() + origIndex + 1, colors.begin() + newIndex + 1);
+        } else {
+            std::rotate(cells.begin() + newIndex, cells.begin() + origIndex, cells.begin() + origIndex + 1);
+            std::rotate(colors.begin() + newIndex, colors.begin() + origIndex, colors.begin() + origIndex + 1);
+        }
 
-        for (size_t i = 0; i < sortedCells.size(); i++) {
-            sortedCells[i].first->setPositionY(sortedCells[i].second);
-            sortedCells[i].first->m_index = static_cast<int>(i);
+        for (int i = 0; i < count; i++) {
+            if (cells[i])
+                cells[i]->setIndex(i);
         }
 
         m_parentPopup->createList();
@@ -200,6 +210,7 @@ bool ColorCell::init(ColorPopup *parent_popup, ColorEntry *entry, const CCSize &
     return true;
 }
 
+// ReSharper disable once CppMemberFunctionMayBeConst
 void ColorCell::onDelete(CCObject*) {
     if (m_parentPopup->m_colors.size() == 1) return FLAlertLayer::create("Hello...?", "Y-you can't have <cr>no colors</c> at all~", "Okay")->show();
 
@@ -237,8 +248,7 @@ void ColorCell::updateColor(ccColor4B const& color)
     m_parentPopup->createList();
 }
 
-
-ColorCell* ColorCell::create(ColorPopup* parent_popup, ColorEntry* entry, CCSize const& size, int index)
+ColorCell* ColorCell::create(ColorPopup* parent_popup, ColorEntry* entry, CCSize const& size, const int index)
 {
     auto ret = new ColorCell();
     if (ret->init(parent_popup, entry, size, index))
@@ -252,14 +262,21 @@ ColorCell* ColorCell::create(ColorPopup* parent_popup, ColorEntry* entry, CCSize
     return nullptr;
 }
 
-ColorEntry* ColorCell::getEntry() {
+ColorEntry* ColorCell::getEntry() const
+{
     return m_entry;
 }
 
-int ColorCell::getIndex() {
+int ColorCell::getIndex() const
+{
     return m_index;
 }
 
 std::string ColorCell::getOriginalHex() {
     return m_originalHex;
+}
+
+// super hacky
+void ColorCell::setIndex(const int index) {
+    m_index = index;
 }
