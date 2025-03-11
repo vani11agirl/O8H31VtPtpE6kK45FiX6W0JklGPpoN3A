@@ -90,7 +90,10 @@ bool ColorCell::init(ColorPopup *parent_popup, ColorEntry *entry, const CCSize &
     grabNodeLayer->setOnStartDrag([this, bg, entryColor] {
         this->m_initialDragY = this->getPositionY();
         this->runAction(CCEaseInOut::create(CCScaleTo::create(0.2f, 0.95f), 2));
-        bg->runAction(CCTintTo::create(0.35f, entryColor.r - 100, entryColor.g - 100, entryColor.b - 100));
+        auto darkenColor = [](GLubyte color) -> GLubyte {
+            return static_cast<GLubyte>(std::max(0, color - 50));
+        };
+        bg->runAction(CCTintTo::create(0.35f, darkenColor(entryColor.r), darkenColor(entryColor.g), darkenColor(entryColor.b)));
         this->setZOrder(CCScene::get()->getHighestChildZ());
     });
 
