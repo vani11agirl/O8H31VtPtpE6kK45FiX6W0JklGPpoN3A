@@ -8,7 +8,7 @@
 	},
 	"id": "vanillagirl.geometrail",
 	"name": "Geometrail",
-	"version": "v0.0.1",
+	"version": "v0.0.2",
 	"developers": ["vanillagirl", "km7dev"],
 	"description": "celestrail port for gd real",
 	"tags": [
@@ -81,7 +81,7 @@
 		},
 		"disable-blending": {
 			"name": "Disable Blending (Experimental)",
-			"description": "Attemps to disable blending by changing the blending algorithm.",
+			"description": "Attempts to disable blending by changing the blending algorithm.",
 			"type": "bool",
 			"default": true
 		},
@@ -133,6 +133,11 @@
 				},
 				{
 					"hex": "#F5A9B8",
+					"enabled": true,
+					"userAdded": true
+				},
+				{
+					"hex": "#5BCEFA",
 					"enabled": true,
 					"userAdded": true
 				}
