@@ -15,5 +15,5 @@ $execute {
 
     // setting validation (old preset system subject to removal)
     Mod::get()->setSavedValue<bool>("enable-custom", Mod::get()->getSettingValue<std::string>("preset") == "Custom");
-    listenForSettingChanges("preset", [](std::string value) { if (value == "Custom") { Mod::get()->setSavedValue<bool>("enable-custom", true); } else { Mod::get()->setSavedValue<bool>("enable-custom", false); }});
+    listenForSettingChanges("preset", [](std::string value) { Mod::get()->setSavedValue<bool>("enable-custom", value == "Custom"); });
 }
