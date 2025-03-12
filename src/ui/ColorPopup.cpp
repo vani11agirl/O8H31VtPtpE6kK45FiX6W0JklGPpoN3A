@@ -66,9 +66,11 @@ bool ColorPopup::setup(std::vector<ColorEntry> colors, ColorListSettingNode *set
 
 void ColorPopup::createList()
 {
+    // avoid blowing up the game, hopefully~
+    m_colorCells.clear();
+
     auto contentSize = m_mainLayer->getContentSize();
     constexpr float HORIZONTAL_PADDING = 5.f;
-
     if (m_scrollLayer)
     {
         m_scrollLayer->removeFromParent();
@@ -85,10 +87,10 @@ void ColorPopup::createList()
     );
     m_scrollLayer->setPosition({HORIZONTAL_PADDING, HORIZONTAL_PADDING + 2.f});
     m_scrollLayer->setID("scroll-layer"_spr);
+
     for (size_t i = 0; i < m_colors.size(); i++)
     {
         size_t index = i;
-        auto originalHex = m_colors[index].m_hex;
         auto cell = ColorCell::create(
             this,
             &m_colors[index],
@@ -106,6 +108,7 @@ void ColorPopup::createList()
     this->m_mainLayer->addChild(m_scrollLayer);
     handleTouchPriority(this);
 }
+
 
 CCSize ColorPopup::getScrollLayerContentSize() const
 {

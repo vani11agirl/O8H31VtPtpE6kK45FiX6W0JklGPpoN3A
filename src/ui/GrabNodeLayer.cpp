@@ -67,11 +67,20 @@ void GrabNodeLayer::registerWithTouchDispatcher(void)
 
 bool GrabNodeLayer::ccTouchBegan(CCTouch *pTouch, CCEvent *pEvent)
 {
-    if (nodeToGrab && cocos::nodeIsVisible(this))
+    if (nodeToGrab && nodeIsVisible(this))
     {
-        auto bbox = CCRect(convertToWorldSpace(CCPointZero), convertToWorldSpace(getScaledContentSize()) - convertToWorldSpace(CCPointZero));
+        CCRect boobs = CCRect(
+            this->convertToWorldSpace(CCPointZero),
+            this->getScaledContentSize()
+        );
 
-        if (pTouch->getLocation() > bbox.origin && pTouch->getLocation() < bbox.origin + bbox.size)
+        // log::debug("touched her at: ({}, {}), and they should be at around: [({}, {}), ({}, {})]",
+        //     pTouch->getLocation().x, pTouch->getLocation().y,
+        //     boobs.origin.x, boobs.origin.y,
+        //     boobs.origin.x + boobs.size.width, boobs.origin.y + boobs.size.height
+        // );
+
+        if (boobs.containsPoint(pTouch->getLocation()))
         {
             isDragging = true;
             startPos = nodeToGrab->getPosition();
@@ -82,9 +91,9 @@ bool GrabNodeLayer::ccTouchBegan(CCTouch *pTouch, CCEvent *pEvent)
             return true;
         }
     }
-
     return false;
 }
+
 
 void GrabNodeLayer::ccTouchMoved(CCTouch *pTouch, CCEvent *pEvent)
 {
@@ -96,7 +105,6 @@ void GrabNodeLayer::ccTouchMoved(CCTouch *pTouch, CCEvent *pEvent)
 
 void GrabNodeLayer::ccTouchEnded(CCTouch *pTouch, CCEvent *pEvent)
 {
-    float dragDistance = ccpDistance(pTouch->getLocation(), pTouch->getStartLocation());
     isDragging = false;
     if (onEndDrag) onEndDrag();
 }

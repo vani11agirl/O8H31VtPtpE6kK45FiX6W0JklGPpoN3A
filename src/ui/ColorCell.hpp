@@ -24,6 +24,7 @@ protected:
     ColorEntry* m_entry;
     int m_index;
     float m_initialDragY;
+    // bool m_eow; // real
     std::string m_originalHex;
     std::vector<CCNode*> m_cells;
 

@@ -3,9 +3,7 @@
 #include <Geode/modify/PlayLayer.hpp>
 #include "utils/customSettings.hpp"
 
-// where's my estrogen pills 
-// i still couldn't find them
-// sorry km7
+// i love "polluting" source files with comments
 
 // Who could have thought that a simple mod would take so long to make?
 // I guess it was a bit more complicated than I thought.
@@ -26,6 +24,8 @@
 
 // Transgender people are valid and deserve to be treated with respect and dignity.
 // We are all human beings, and we all deserve to be treated with kindness and compassion.
+
+// Why he ourple tho?
 
 using namespace geode::prelude;
 

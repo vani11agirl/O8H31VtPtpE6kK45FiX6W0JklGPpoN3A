@@ -99,50 +99,66 @@ bool ColorCell::init(ColorPopup *parent_popup, ColorEntry *entry, const CCSize &
 
     // FIXME: Game may or may not explode
     grabNodeLayer->setOnEndDrag([this, bg, entryColor] {
+        // Prevent multiple calls
+        // if (this->m_eow)
+        //     return;
+        // this->m_eow = true;
+
         this->runAction(CCEaseBackOut::create(CCScaleTo::create(0.35f, 1.0f)));
         bg->runAction(CCTintTo::create(0.35f, entryColor.r, entryColor.g, entryColor.b));
 
         float deltaY = m_initialDragY - this->getPositionY();
-        float blockHeight = 35.0f + 2.5f;
+        float blockHeight = 35.0f + 2.5f; // cell height + gap
 
         if (fabs(deltaY) < 5.0f) {
             m_parentPopup->createList();
+            // this->m_eow = false;
             return;
         }
 
         int deltaIndex = static_cast<int>(round(deltaY / blockHeight));
-        int count = m_parentPopup->m_colorCells.size();
+        int count = static_cast<int>(m_parentPopup->m_colorCells.size());
         int origIndex = m_index;
         int newIndex = origIndex + deltaIndex;
 
-        if (newIndex < 0) newIndex = 0;
-        if (newIndex >= count) newIndex = count - 1;
+        newIndex = std::clamp(newIndex, 0, count - 1);
 
         log::debug("Dragged cell moved from index {} to index {}", origIndex, newIndex);
 
         if (newIndex == origIndex) {
             m_parentPopup->createList();
+            // this->m_eow = false;
             return;
         }
 
         auto& cells = m_parentPopup->m_colorCells;
         auto& colors = m_parentPopup->m_colors;
 
-        if (origIndex < newIndex) {
-            std::rotate(cells.begin() + origIndex, cells.begin() + origIndex + 1, cells.begin() + newIndex + 1);
-            std::rotate(colors.begin() + origIndex, colors.begin() + origIndex + 1, colors.begin() + newIndex + 1);
-        } else {
-            std::rotate(cells.begin() + newIndex, cells.begin() + origIndex, cells.begin() + origIndex + 1);
-            std::rotate(colors.begin() + newIndex, colors.begin() + origIndex, colors.begin() + origIndex + 1);
+        if (origIndex < 0 || origIndex >= count || newIndex < 0 || newIndex >= count) {
+            log::error("Invalid index? origIndex: {}, newIndex: {}, count: {}", origIndex, newIndex, count);
+            m_parentPopup->createList();
+            // this->m_eow = false;
+            return;
         }
 
+        ColorCell* draggedCell = cells[origIndex];
+        ColorEntry draggedColor = colors[origIndex];
+
+        cells.erase(cells.begin() + origIndex);
+        colors.erase(colors.begin() + origIndex);
+
+        cells.insert(cells.begin() + newIndex, draggedCell);
+        colors.insert(colors.begin() + newIndex, draggedColor);
+
         for (int i = 0; i < count; i++) {
-            if (cells[i])
-                cells[i]->setIndex(i);
+            cells[i]->setIndex(i);
         }
 
         m_parentPopup->createList();
+
+        // this->m_eow = false;
     });
+
 
     grabNodeLayer->setContentSize(ccp(this->getContentHeight() - 2, this->getContentHeight() - 2));
     grabNodeLayer->setScale(.5f, 1.f);
