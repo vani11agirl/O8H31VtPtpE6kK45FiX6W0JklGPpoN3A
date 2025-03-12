@@ -69,18 +69,12 @@ bool GrabNodeLayer::ccTouchBegan(CCTouch *pTouch, CCEvent *pEvent)
 {
     if (nodeToGrab && nodeIsVisible(this))
     {
-        CCRect boobs = CCRect(
+        CCRect grabberBounds = CCRect(
             this->convertToWorldSpace(CCPointZero),
             this->getScaledContentSize()
         );
 
-        // log::debug("touched her at: ({}, {}), and they should be at around: [({}, {}), ({}, {})]",
-        //     pTouch->getLocation().x, pTouch->getLocation().y,
-        //     boobs.origin.x, boobs.origin.y,
-        //     boobs.origin.x + boobs.size.width, boobs.origin.y + boobs.size.height
-        // );
-
-        if (boobs.containsPoint(pTouch->getLocation()))
+        if (grabberBounds.containsPoint(pTouch->getLocation()))
         {
             isDragging = true;
             startPos = nodeToGrab->getPosition();
