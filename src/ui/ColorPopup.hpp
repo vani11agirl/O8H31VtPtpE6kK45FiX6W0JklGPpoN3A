@@ -30,7 +30,7 @@ class ColorPopup : public Popup<std::vector<ColorEntry>, ColorListSettingNode*> 
 
         void onAdd(CCObject *);
         void onClose(CCObject *sender) override;
-        static void onPresets(CCObject *);
+        void onPresets(CCObject *);
 
     public:
 

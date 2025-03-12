@@ -1,6 +1,7 @@
 #include <utility>
 #include "ColorPopup.hpp"
 #include "ColorCell.hpp"
+#include "PresetPopup.hpp"
 #include "../utils/customSettings.hpp"
 
 using namespace geode::prelude;
@@ -51,7 +52,7 @@ bool ColorPopup::setup(std::vector<ColorEntry> colors, ColorListSettingNode *set
     m_presetBtn = CCMenuItemSpriteExtra::create(
         presetSprite,
         this,
-        nullptr
+        menu_selector(ColorPopup::onPresets)
         );
     m_presetBtn->setAnchorPoint({0.5f, 0.5f});
     m_presetBtn->setID("preset-button");
@@ -127,11 +128,12 @@ void ColorPopup::onAdd(CCObject*)
     this->updateAddButtonState();
 }
 
+// ReSharper disable once CppMemberFunctionMayBeStatic
 void ColorPopup::onPresets(CCObject*)
 {
-    // TODO: the actual damn popup
-    // I just felt like wearing feminine clothing
-    return;
+    // im killing myself
+    auto presetPopup = PresetPopup::create();
+    presetPopup->show();
 }
 
 ColorPopup* ColorPopup::create(std::vector<ColorEntry> colors, ColorListSettingNode *setting)
