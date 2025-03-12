@@ -1,4 +1,8 @@
 #include "PresetPopup.hpp"
+#include <matjson.hpp>
+#define GEODE_ERROR log::error
+#define GEODE_INFO log::info
+#define GEODE_DEBUG log::debug
 
 /**
  * @brief Makes a preset button!
@@ -63,6 +67,63 @@ bool PresetPopup::setup()
         );
 
     m_buttonMenu->addChildAtPosition(okBtn, Anchor::Bottom, ccp(0, 20));
+
+    return true;
+}
+//
+bool PresetPopup::setupPresets()
+{
+    auto mod = Mod::get();
+
+    std::filesystem::path presetsJson = mod->getResourcesDir() / "presets.json";
+
+    // we read the file meow
+    std::ifstream file(presetsJson);
+    if (!file.is_open()) {
+        GEODE_ERROR("Failed to open presets.json");
+        return false;
+    }
+    std::string jsonString((std::istreambuf_iterator<char>(file)), std::istreambuf_iterator<char>());
+
+    auto res = matjson::parse(jsonString);
+    if (!res) {
+        GEODE_ERROR("Failed to parse presets.json! Oh no!");
+        return false;
+    }
+    matjson::Value root = res.unwrapOr("Oops...");
+    if (root == "Oops..." || !root.isObject()) {
+        GEODE_ERROR("Failed to parse preset root! Oh no!");
+        return false;
+    }
+
+    for (auto& preset : root["presets"].asArray())
+    {
+        if (!preset.isObject()) {
+            GEODE_ERROR("Failed to parse a preset! Oh no!");
+            continue;
+        }
+        std::string name = preset["name"];
+        std::vector<int> accent = preset["accent"];
+
+        // Button creation code goes here
+        auto spr = ButtonSprite::create(name);
+        spr->setScale(.7f);
+        // Slightly darken the color for readability
+        ccColor3B color = {
+            static_cast<GLubyte>(accent[0] * 0.8),
+            static_cast<GLubyte>(accent[1] * 0.8),
+            static_cast<GLubyte>(accent[2] * 0.8)
+        };
+        spr->setColor(color);
+        auto btn = CCMenuItemSpriteExtra::create(
+            spr,
+            this,
+            nullptr // TODO
+        );
+        btn->setUserObject("preset", CCString::create(name));
+        m_presetsMenu->addChild(btn);
+        m_presetsMenu->updateLayout();
+    }
 
     return true;
 }

@@ -7,7 +7,7 @@ protected:
     bool setup() override;
     CCMenu* m_presetsMenu;
 
-    void setupPresets();
+    bool setupPresets();
 public:
     static PresetPopup* create() {
         auto ret = new PresetPopup();

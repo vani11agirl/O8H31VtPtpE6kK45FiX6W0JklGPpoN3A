@@ -2,6 +2,7 @@
 <project version="4">
   <component name="VcsDirectoryMappings">
     <mapping directory="" vcs="Git" />
+    <mapping directory="$PROJECT_DIR$/build/_deps/bindings-src" vcs="Git" />
     <mapping directory="$PROJECT_DIR$/cmake-build-debug/_deps/bindings-src" vcs="Git" />
     <mapping directory="$PROJECT_DIR$/cmake-build-relwithdebinfo-visual-studio/_deps/bindings-src" vcs="Git" />
     <mapping directory="$USER_HOME$/cache/fmt/cccb77ae9609d2768ed80dd42cec54f77b1f1455" vcs="Git" />
