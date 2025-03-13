@@ -25,6 +25,9 @@
 		},
 		"sprites": [
 			"resources/*.png"
+		],
+		"files": [
+			"resources/presets.json"
 		]
 	},
 	"links": {

@@ -25,7 +25,33 @@ m_presetsMenu->addChild(btn);
 
 // TODO: The rest of this.
 
+template <>
+struct matjson::Serialize<std::vector<int>>
+{
+    static Result<std::vector<int>> fromJson(matjson::Value const &value)
+    {
+        if (!value.isArray()) {
+            return Err("Expected an array");
+        }
+        std::vector<int> result;
+        for (auto const &elem : *value.asArray()) {
+            if (!elem.isNumber()) {
+                return Err("Expected a number");
+            }
+            result.push_back(elem.asInt().unwrapOrDefault());
+        }
+        return Ok(result);
+    }
 
+    static matjson::Value toJson(std::vector<int> const &value)
+    {
+        auto arr = matjson::makeObject({});
+        for (auto const &elem : value) {
+            arr.push(elem);
+        }
+        return arr;
+    }
+};
 
 bool PresetPopup::setup()
 {
@@ -68,6 +94,8 @@ bool PresetPopup::setup()
 
     m_buttonMenu->addChildAtPosition(okBtn, Anchor::Bottom, ccp(0, 20));
 
+    setupPresets();
+
     return true;
 }
 //
@@ -77,15 +105,18 @@ bool PresetPopup::setupPresets()
 
     std::filesystem::path presetsJson = mod->getResourcesDir() / "presets.json";
 
+    log::info("Reading presets from {}", presetsJson.string());
+
     // we read the file meow
     std::ifstream file(presetsJson);
-    if (!file.is_open()) {
-        GEODE_ERROR("Failed to open presets.json");
-        return false;
-    }
-    std::string jsonString((std::istreambuf_iterator<char>(file)), std::istreambuf_iterator<char>());
+    // if (!file.is_open()) {
+    //     GEODE_ERROR("Failed to open presets.json");
+    //     return false;
+    // }
+    // std::string jsonString((std::istreambuf_iterator<char>(file)), std::istreambuf_iterator<char>());
+    // log::info("{}",jsonString);
 
-    auto res = matjson::parse(jsonString);
+    auto res = matjson::parse(file);
     if (!res) {
         GEODE_ERROR("Failed to parse presets.json! Oh no!");
         return false;
@@ -96,17 +127,16 @@ bool PresetPopup::setupPresets()
         return false;
     }
 
-    for (auto& preset : root["presets"].asArray())
+    for (auto& [name, preset] : root)
     {
         if (!preset.isObject()) {
             GEODE_ERROR("Failed to parse a preset! Oh no!");
             continue;
         }
-        std::string name = preset["name"];
-        std::vector<int> accent = preset["accent"];
+        std::vector<int> accent = preset["accent"].as<std::vector<int>>().unwrapOrDefault();
 
         // Button creation code goes here
-        auto spr = ButtonSprite::create(name);
+        auto spr = ButtonSprite::create(name.c_str());
         spr->setScale(.7f);
         // Slightly darken the color for readability
         ccColor3B color = {
