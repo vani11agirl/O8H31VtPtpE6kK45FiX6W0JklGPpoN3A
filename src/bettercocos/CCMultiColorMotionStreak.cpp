@@ -115,7 +115,6 @@ void CCMultiColorMotionStreak::update(float delta) {
     if (m_uNuPoints < 2)
         return;
 
-    // Loop through all points in the trail
     for (unsigned int i = 0; i < m_uNuPoints; i++) {
         CCPoint tangent;
         if (i == 0 && m_uNuPoints > 1) {

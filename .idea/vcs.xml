@@ -5,6 +5,9 @@
     <mapping directory="$PROJECT_DIR$/build/_deps/bindings-src" vcs="Git" />
     <mapping directory="$PROJECT_DIR$/cmake-build-debug/_deps/bindings-src" vcs="Git" />
     <mapping directory="$PROJECT_DIR$/cmake-build-relwithdebinfo-visual-studio/_deps/bindings-src" vcs="Git" />
+    <mapping directory="$USER_HOME$/cache/fmt/69912fb6b71fcb1f7e5deca191a2bb4748c4e7b6" vcs="Git" />
     <mapping directory="$USER_HOME$/cache/json/dbc884f9fcebaf645c7ae9ce79261d1aba0bb13b" vcs="Git" />
+    <mapping directory="$USER_HOME$/cache/result/ade45dec94899c25150383d6c6c26347d72a4fec" vcs="Git" />
+    <mapping directory="$USER_HOME$/cache/tuliphook/1a2f43e4eb4e579027bd372c40eed7ff5f4838fc" vcs="Git" />
   </component>
 </project>

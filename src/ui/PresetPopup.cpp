@@ -1,34 +1,15 @@
 #include "PresetPopup.hpp"
 #include <matjson.hpp>
+
+// What are you on to.
 #define GEODE_ERROR log::error
 #define GEODE_INFO log::info
 #define GEODE_DEBUG log::debug
 
-/**
- * @brief Makes a preset button!
- * @param __label The button label, as a string.
- * @param __colorsArray Array of colors.
- * @param __representation Accent/representation color. Rendering the individuals that way would take way too much effort.
- *
- * @note I hate this.
- */
-#define PRESET_BUTTON(__label, __colorsArray, __representation) \
-CCArray* __colorsArray = new CCArray(); \
-ccColor3B __representation; \
-auto spr = ButtonSprite::create(__label); \
-std::string nodeId = fmt::format("{}{}", static_cast<char>(std::tolower(__label[0])), __label.substr(1)); \
-spr->setID(nodeId.c_str()); \
-spr->setColor(__representation); \
-auto btn = CCMenuItemSpriteExtra::create(spr, this, menu_selector(nullptr)); \
-btn->setUserObject("preset", CCString::create(__label)); \
-m_presetsMenu->addChild(btn);
-
-// TODO: The rest of this.
-
 template <>
 struct matjson::Serialize<std::vector<int>>
 {
-    static Result<std::vector<int>> fromJson(matjson::Value const &value)
+    static Result<std::vector<int>> fromJson(Value const &value)
     {
         if (!value.isArray()) {
             return Err("Expected an array");
@@ -43,7 +24,7 @@ struct matjson::Serialize<std::vector<int>>
         return Ok(result);
     }
 
-    static matjson::Value toJson(std::vector<int> const &value)
+    static Value toJson(std::vector<int> const &value)
     {
         auto arr = matjson::makeObject({});
         for (auto const &elem : value) {
@@ -55,10 +36,7 @@ struct matjson::Serialize<std::vector<int>>
 
 bool PresetPopup::setup()
 {
-
-    // convenience function provided by Popup
-    // for adding/setting a title to the popup
-    this->setTitle("Hi mom!");
+    this->setTitle("Trail Presets");
 
     auto presetsContainer = CCNode::create();
     presetsContainer->setContentSize(CCSizeMake(300, 100));
@@ -84,21 +62,20 @@ bool PresetPopup::setup()
     presetsContainer->addChildAtPosition(m_presetsMenu, Anchor::Center);
     m_mainLayer->addChildAtPosition(presetsContainer, Anchor::Top, ccp(0, -85));
 
-    auto okSpr = ButtonSprite::create("OK");
+    auto okSpr = ButtonSprite::create("Select");
     okSpr->setScale(.7f);
     auto okBtn = CCMenuItemSpriteExtra::create(
         okSpr,
         this,
         menu_selector(PresetPopup::onClose)
         );
-
     m_buttonMenu->addChildAtPosition(okBtn, Anchor::Bottom, ccp(0, 20));
 
     setupPresets();
 
     return true;
 }
-//
+
 bool PresetPopup::setupPresets()
 {
     auto mod = Mod::get();
@@ -168,12 +145,14 @@ bool PresetPopup::setupPresets()
 void PresetPopup::onSelection(CCObject* meow)
 {
     const auto target = as<CCMenuItemToggler*, CCObject*>(meow);
-    auto presetString = target->getUserObject("preset");
-    GEODE_DEBUG("Selected preset: {}", typeinfo_cast<CCString*, CCObject*>(presetString)->getCString());
+    auto presetObject = target->getUserObject("preset");
+    auto presetString = typeinfo_cast<CCString*, CCObject*>(presetObject)->getCString();
+    GEODE_DEBUG("Selected preset: {}", presetString);
+    Mod::get()->setSavedValue<std::string>("preset", presetString);
 
     for (const auto& btn : m_presetButtons)
     {
-        if (btn->getUserObject("preset") == presetString)
+        if (btn->getUserObject("preset") == presetObject)
         {
             btn->toggle(true);
             btn->selected();
