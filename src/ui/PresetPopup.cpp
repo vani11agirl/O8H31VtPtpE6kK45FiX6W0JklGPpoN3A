@@ -75,7 +75,7 @@ bool PresetPopup::setup()
     m_presetsMenu->setContentSize(presetsContainer->getContentSize() - ccp(10, 10));
     m_presetsMenu->setLayout(
         RowLayout::create()
-            ->setDefaultScaleLimits(1.f, 1.f)
+            ->setDefaultScaleLimits(.1f,.3f)
             ->setGrowCrossAxis(true)
             ->setCrossAxisOverflow(true)
             ->setAxisAlignment(AxisAlignment::Center)
@@ -105,16 +105,10 @@ bool PresetPopup::setupPresets()
 
     std::filesystem::path presetsJson = mod->getResourcesDir() / "presets.json";
 
-    log::info("Reading presets from {}", presetsJson.string());
+    GEODE_DEBUG("Reading presets from {}", presetsJson.string());
 
     // we read the file meow
     std::ifstream file(presetsJson);
-    // if (!file.is_open()) {
-    //     GEODE_ERROR("Failed to open presets.json");
-    //     return false;
-    // }
-    // std::string jsonString((std::istreambuf_iterator<char>(file)), std::istreambuf_iterator<char>());
-    // log::info("{}",jsonString);
 
     auto res = matjson::parse(file);
     if (!res) {
@@ -133,27 +127,66 @@ bool PresetPopup::setupPresets()
             GEODE_ERROR("Failed to parse a preset! Oh no!");
             continue;
         }
+
         std::vector<int> accent = preset["accent"].as<std::vector<int>>().unwrapOrDefault();
 
         // Button creation code goes here
-        auto spr = ButtonSprite::create(name.c_str());
-        spr->setScale(.7f);
+        auto lightSpr = ButtonSprite::create(name.c_str(), "bigFont.fnt", "geode.loader/white-square.png", .6f);
+        auto darkSpr = ButtonSprite::create(name.c_str(), "bigFont.fnt", "geode.loader/white-square.png", .6f);
+        // spr->setScale(.7f);
         // Slightly darken the color for readability
-        ccColor3B color = {
+        ccColor3B lighterColor = {
             static_cast<GLubyte>(accent[0] * 0.8),
             static_cast<GLubyte>(accent[1] * 0.8),
             static_cast<GLubyte>(accent[2] * 0.8)
         };
-        spr->setColor(color);
-        auto btn = CCMenuItemSpriteExtra::create(
-            spr,
+        ccColor3B darkerColor = {
+            static_cast<GLubyte>(accent[0] * 0.5),
+            static_cast<GLubyte>(accent[1] * 0.5),
+            static_cast<GLubyte>(accent[2] * 0.5)
+        };
+        lightSpr->m_BGSprite->setColor(lighterColor);
+        darkSpr->m_BGSprite->setColor(darkerColor);
+        auto btn = CCMenuItemToggler::create(
+            darkSpr, lightSpr,
             this,
-            nullptr // TODO
+            menu_selector(PresetPopup::onSelection)
         );
+        btn->m_notClickable = true;
         btn->setUserObject("preset", CCString::create(name));
         m_presetsMenu->addChild(btn);
         m_presetsMenu->updateLayout();
+        m_presetButtons.push_back(btn);
     }
-
     return true;
+}
+
+
+// ReSharper disable once CppMemberFunctionMayBeStatic
+// ReSharper disable once CppMemberFunctionMayBeConst
+// can you shut up for once
+void PresetPopup::onSelection(CCObject* meow)
+{
+    const auto target = as<CCMenuItemToggler*, CCObject*>(meow);
+    auto presetString = target->getUserObject("preset");
+    GEODE_DEBUG("Selected preset: {}", typeinfo_cast<CCString*, CCObject*>(presetString)->getCString());
+
+    for (const auto& btn : m_presetButtons)
+    {
+        if (btn->getUserObject("preset") == presetString)
+        {
+            btn->toggle(true);
+            btn->selected();
+            btn->m_notClickable = true;
+            btn->setClickable(false);
+            btn->updateSprite();
+        } else
+        {
+            btn->toggle(false);
+            btn->unselected();
+            btn->m_notClickable = false;
+            btn->setClickable(true);
+            btn->updateSprite();
+        }
+    }
 }
