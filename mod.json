@@ -34,6 +34,11 @@
 		"source": "https://github.com/AnhNguyenlost13/better-pride-trails"
 	},
 	"settings": {
+		"trail-settings": {
+			"type": "title",
+			"name": "Trail Settings",
+			"description": "These, well... allows you to change the trail parameters to your liking."
+		},
 		"fade-time": {
 			"name": "Fade Time",
 			"description": "Duration for the fade effect (in seconds). This is also the trail length until I properly work on it.",
@@ -41,18 +46,6 @@
 			"default": 0.3,
 			"min": 0.1,
 			"max": 1.0,
-			"control": {
-				"slider": true,
-				"slider-step": 0.1
-			}
-		},
-		"min-seg": {
-			"name": "[Debug] Minimum Segment Length",
-			"description": "Minimum distance between points in the trail. You probably do not need to change this.",
-			"type": "float",
-			"default": 5.0,
-			"min": 0.1,
-			"max": 50.0,
 			"control": {
 				"slider": true,
 				"slider-step": 0.1
@@ -121,6 +114,35 @@
 					"userAdded": true
 				}
 			]
+		},
+		"debugging": {
+			"type": "title",
+			"name": "Developer Options",
+			"description": "These are provided for debugging. Only change these if you know what you're doing."
+		},
+		"min-seg": {
+			"name": "Minimum Segment Length",
+			"description": "Minimum distance between points in the trail. You probably do not need to change this.",
+			"type": "float",
+			"default": 5.0,
+			"min": 0.1,
+			"max": 50.0,
+			"control": {
+				"slider": true,
+				"slider-step": 0.1
+			}
+		},
+		"max-seg": {
+			"name": "Maximum Segment Length",
+			"description": "Maximum distance between points in the trail. Again, you probably do not need to change this.",
+			"type": "float",
+			"default": 50.0,
+			"min": 25.0,
+			"max": 100.0,
+			"control": {
+				"slider": true,
+				"slider-step": 1.0
+			}
 		}
 	}
 }

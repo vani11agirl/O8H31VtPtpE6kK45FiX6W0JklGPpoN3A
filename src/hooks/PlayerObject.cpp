@@ -85,7 +85,7 @@ class $modify(gErpaxdumjam4dumge, PlayerObject)
 
         auto newTrail = CCMultiColorMotionStreak::create(fastGetSetting<"fade-time", float>(), fastGetSetting<"min-seg", float>(), fastGetSetting<"trail-width", float>(), fastGetSetting<"opacity", int>(), stripeColors, texture, fastGetSetting<"disable-blending", bool>());
         newTrail->setID("new-trail"_spr);
-        newTrail->m_fMaxSeg = 50.0f;
+        newTrail->m_fMaxSeg = fastGetSetting<"max-seg", float>();
 
         this->m_regularTrail = newTrail;
         this->m_regularTrail->retain();
