@@ -41,30 +41,33 @@ class $modify(gErpaxdumjam4dumge, PlayerObject)
             auto res = matjson::parse(file);
             if (!res) {
                 GEODE_ERROR("Failed to parse presets.json! Oh no!");
-                return {};
+                return {ccColor3B(255, 255, 255)};
             }
             matjson::Value root = res.unwrapOr("Oops...");
+            log::info("{}", root.dump(2));
 
             // Get the preset colors, with the preset name being the key.
             if (root == "Oops..." || !root.isObject()) {
                 GEODE_ERROR("Failed to parse preset root! Oh no!");
-                return {};
+                return {ccColor3B(255, 255, 255)};
             }
 
-            auto presetColors = root[preset].as<std::vector<int>>().unwrapOrDefault();
-            if (presetColors.empty()) {
-                GEODE_ERROR("Failed to parse preset colors! Oh no!");
-                return {};
-            }
+            auto presetColors = root[preset]["colors"];
+            
             std::vector<ccColor3B> ret = {};
-            for (size_t i = 0; i < presetColors.size(); i += 3) {
+            for (size_t i = 0; i < presetColors.size(); i++) {
                 ccColor3B color = {
-                    static_cast<GLubyte>(presetColors[i]),
-                    static_cast<GLubyte>(presetColors[i + 1]),
-                    static_cast<GLubyte>(presetColors[i + 2])
+                    static_cast<GLubyte>(presetColors[i][0].asInt().unwrapOrDefault()),
+                    static_cast<GLubyte>(presetColors[i][1].asInt().unwrapOrDefault()),
+                    static_cast<GLubyte>(presetColors[i][2].asInt().unwrapOrDefault())
                 };
                 ret.push_back(color);
             }
+            if (ret.empty()) {
+                GEODE_ERROR("Failed to parse preset colors! Oh no!");
+                return {ccColor3B(255, 255, 255)};
+            }
+            log::info("{}", ret);
             return ret;
         }
     }
