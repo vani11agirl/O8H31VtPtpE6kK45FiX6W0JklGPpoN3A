@@ -88,30 +88,6 @@
 			"type": "bool",
 			"default": true
 		},
-	"preset": {
-		"name": "Preset",
-		"description": "Some pride flag presets, yea.",
-		"type": "string",
-		"one-of": [
-			"Custom",
-			"Pride",
-			"Bisexual",
-			"Pansexual",
-			"Transgender",
-			"Nonbinary",
-			"Genderfluid",
-			"Genderqueer",
-			"Lesbian",
-			"Aromantic",
-			"Asexual",
-			"Agender",
-			"Demiboy",
-			"Demigirl",
-			"Polysexual",
-			"Abrosexual"
-		],
-		"default": "Custom"
-	},
 		"stripe-colors": {
 			"name": "(Custom) Stripe Colors",
 			"description": "A list of colors for the trail, maximum 7.",
