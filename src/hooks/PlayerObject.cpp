@@ -44,7 +44,6 @@ class $modify(gErpaxdumjam4dumge, PlayerObject)
                 return {ccColor3B(255, 255, 255)};
             }
             matjson::Value root = res.unwrapOr("Oops...");
-            log::info("{}", root.dump(2));
 
             // Get the preset colors, with the preset name being the key.
             if (root == "Oops..." || !root.isObject()) {
@@ -67,7 +66,6 @@ class $modify(gErpaxdumjam4dumge, PlayerObject)
                 GEODE_ERROR("Failed to parse preset colors! Oh no!");
                 return {ccColor3B(255, 255, 255)};
             }
-            log::info("{}", ret);
             return ret;
         }
     }
