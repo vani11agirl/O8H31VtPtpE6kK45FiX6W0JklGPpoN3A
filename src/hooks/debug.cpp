@@ -5,13 +5,13 @@
 // ReSharper disable CppMemberFunctionMayBeConst
 #include <Geode/Geode.hpp>
 #include <Geode/modify/PlayerObject.hpp>
-#if false
+#if true
 using namespace geode::prelude;
 
 class $modify(DebugPlayerObject, PlayerObject)
 {
     $override void resetStreak() {
-        log::info("using my own resetstreak impl");
+        log::debug("using my own resetstreak impl");
         CCPoint pos = this->getPosition();
 
         if (!this->levelFlipping()) {
@@ -33,21 +33,17 @@ class $modify(DebugPlayerObject, PlayerObject)
 
     $override void activateStreak() {
         log::debug("activateStreak() called");
-        PlayerObject::activateStreak();
-        // if (!this->levelFlipping() && !GameManager::sharedState()->m_editorEnabled && !this->m_isHidden) {
-        //     this->m_fadeOutStreak = true;
-        //     this->m_regularTrail->resumeStroke();
-        //
-        //     if (this->m_isDart) {
-        //         HardStreak* m_waveTrail = this->m_waveTrail;
-        //         CCPoint pos = this->getPosition();
-        //
-        //         m_waveTrail->m_currentPoint = pos;
-        //         m_waveTrail->stopAllActions();
-        //         m_waveTrail->setOpacity(255);
-        //         m_waveTrail->resumeStroke();
-        //     }
-        // }
+        if (!this->levelFlipping() && !GameManager::sharedState()->m_editorEnabled && !this->m_isHidden) {
+            this->m_fadeOutStreak = true;
+            this->m_regularTrail->resumeStroke();
+
+            if (this->m_isDart) {
+                m_waveTrail->m_currentPoint = this->getPosition();
+                m_waveTrail->stopAllActions();
+                m_waveTrail->setOpacity(255);
+                m_waveTrail->resumeStroke();
+            }
+        }
     }
 
     $override void addAllParticles()
@@ -66,56 +62,47 @@ class $modify(DebugPlayerObject, PlayerObject)
         this->m_parentLayer->addChild(this->m_swingBurstParticles2, 39);
     }
 
-    $override void PlayerObject::animatePlatformerJump(float jumpFactor) {
-        // Only animate jump if not moving horizontally and in normal mode (decompiled logic)
+    $override void animatePlatformerJump(float jumpFactor) {
         if (!m_holdingLeft && !m_holdingRight &&
             !m_platformerMovingLeft && !m_platformerMovingRight &&
             !m_isShip && !m_isBird && !m_isDart && !m_isSwing &&
-            !m_isBall && !m_isRobot && !m_isSpider) {  // Expanded isInNormalMode()
+            !m_isBall && !m_isRobot && !m_isSpider) {
 
-            int iterations = 1;  // Matches iVar6 = 1 in decomp
+            int iterations = 1;
             do {
-                // Get absolute rotation value (clamping happens after casting)
                 float rotation = fabsf(this->getRotation());
 
-                // Default scale factors
                 float scaleX1 = 0.8f;
                 float scaleY1 = jumpFactor * 1.35f;
                 float scaleX2 = 1.1f;
                 float scaleY2 = 0.9f;
 
-                // If rotation is between [46, 135] or [226, 315], swap scaling values
-                if (((int)rotation - 46 < 89) || ((int)rotation - 226 < 89)) {
+                if ((static_cast<int>(rotation) - 46 < 89) || (static_cast<int>(rotation) - 226 < 89)) {
                     scaleX1 = jumpFactor * 1.35f;
                     scaleY1 = 0.8f;
                     scaleX2 = 0.9f;
                     scaleY2 = 1.1f;
                 }
 
-                // First scaling action: quick stretch
                 auto scaleTo1 = CCScaleTo::create(0.1f / m_gravityMod, scaleX1, scaleY1);
                 auto ease1 = CCEaseInOut::create(scaleTo1, 2.0f);
 
-                // Second scaling action: expand
                 auto scaleTo2 = CCScaleTo::create(0.25f / m_gravityMod, scaleX2, scaleY2);
-                auto ease2 = CCEaseInOut::create(scaleTo1, 2.0f);
+                auto ease2 = CCEaseInOut::create(scaleTo2, 2.0f);
 
-                // Third scaling action: return to normal
                 auto scaleTo3 = CCScaleTo::create(0.15f / m_gravityMod, 1.0f, 1.0f);
                 auto ease3 = CCEaseInOut::create(scaleTo3, 2.0f);
 
-                // Create an animation sequence for smooth transitions
-                auto sequence = CCSequence::create(ease2, ease2, ease3, nullptr);
-                sequence->setTag(13); // Set an action tag for easy tracking
+                auto sequence = CCSequence::create(ease1, ease2, ease3, nullptr);
+                sequence->setTag(13);
 
-                // Run the action twice: first for icon sprite, then for glow.
                 if (iterations == 0)
                     m_iconSprite->runAction(sequence);
                 else
                     m_iconGlow->runAction(sequence);
 
                 iterations++;
-            } while (iterations < 2);  // Loop ensures it runs for both sprite & glow
+            } while (iterations < 2);
         }
     }
 

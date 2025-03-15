@@ -99,17 +99,17 @@ bool CCMultiColorMotionStreak::initWithColors(
 
     return true;
 }
-void CCMultiColorMotionStreak::setStripeColors(const std::vector<ccColor3B>& colors)
-{
+void CCMultiColorMotionStreak::setStripeColors(const std::vector<ccColor3B>& colors) {
     m_stripeColors = colors;
-    m_verticesPerPoint = static_cast<unsigned int>(colors.size());
+    // please work meow meow
+    m_verticesPerPoint = static_cast<unsigned int>(colors.size() + 1);
 }
+
 
 void CCMultiColorMotionStreak::setBlendingEnabled(bool enabled) {
     m_blendingEnabled = enabled;
 }
 
-// Updated update() function: now iterates from i = 0 to m_uNuPoints
 void CCMultiColorMotionStreak::update(float delta) {
     CCMotionStreak::update(delta);
     if (m_uNuPoints < 2)
@@ -122,7 +122,6 @@ void CCMultiColorMotionStreak::update(float delta) {
         } else if (i == m_uNuPoints - 1) {
             tangent = ccpNormalize(ccpSub(m_pPointVertexes[i], m_pPointVertexes[i - 1]));
         } else {
-            // Average tangent for smoother bends
             CCPoint forward = ccpSub(m_pPointVertexes[i + 1], m_pPointVertexes[i]);
             CCPoint backward = ccpSub(m_pPointVertexes[i], m_pPointVertexes[i - 1]);
             tangent = ccpNormalize(ccpAdd(forward, backward));
@@ -130,32 +129,33 @@ void CCMultiColorMotionStreak::update(float delta) {
         CCPoint normal = ccp(-tangent.y, tangent.x);
 
         for (unsigned int j = 0; j < m_verticesPerPoint; j++) {
-            // lmk if it fixes the problem
-            // float factor = (static_cast<float>(j) / (m_verticesPerPoint - 1)) - 0.5f;
-            const float factor = ((static_cast<float>(j) + 0.5f) / m_verticesPerPoint) - 0.5f; // NOLINT(*-narrowing-conversions)
+            const float factor = (static_cast<float>(j) / (m_verticesPerPoint - 1)) - 0.5f;
             CCPoint offset = ccpMult(normal, factor * m_fStroke);
-            const CCPoint vertexPos = ccpAdd(m_pPointVertexes[i], offset);
+            CCPoint vertexPos = ccpAdd(m_pPointVertexes[i], offset);
 
-            const unsigned int vertexIndex = i * m_verticesPerPoint + j;
+            unsigned int vertexIndex = i * m_verticesPerPoint + j;
             m_pVertices[vertexIndex] = { vertexPos.x, vertexPos.y };
-            m_pTexCoords[vertexIndex] = tex2(static_cast<float>(j) / (m_verticesPerPoint - 1), // NOLINT(*-narrowing-conversions)
-                                             static_cast<float>(i) / m_uNuPoints); // NOLINT(*-narrowing-conversions)
+            m_pTexCoords[vertexIndex] = tex2(static_cast<float>(j) / (m_verticesPerPoint - 1),
+                                             static_cast<float>(i) / m_uNuPoints);
 
-            // I'd have the trail fade out toward the tail instead
-            // float fadeFactor = (m_uNuPoints > 1) ? (static_cast<float>(i) / (m_uNuPoints - 1)) : 1.0f;
-            // GLubyte vertexAlpha = static_cast<GLubyte>(255 * fadeFactor);
-            const float fadeFactor = (m_uNuPoints > 1) ? (1.0f - static_cast<float>(i) / (m_uNuPoints - 1)) : 1.0f; // NOLINT(*-narrowing-conversions)
+            const float fadeFactor = (m_uNuPoints > 1) ? (1.0f - static_cast<float>(i) / (m_uNuPoints - 1)) : 1.0f;
             const auto vertexAlpha = static_cast<GLubyte>(255 * fadeFactor);
 
             if (m_blendingEnabled) {
-                const auto [r, g, b] = m_stripeColors[j % m_stripeColors.size()];
-                m_pColorPointer[vertexIndex * 4 + 0] = r;
-                m_pColorPointer[vertexIndex * 4 + 1] = g;
-                m_pColorPointer[vertexIndex * 4 + 2] = b;
+                ccColor3B color;
+                if (j == 0)
+                    color = m_stripeColors.front();
+                else if (j == m_verticesPerPoint - 1)
+                    color = m_stripeColors.back();
+                else
+                    color = m_stripeColors[j - 1];
+                m_pColorPointer[vertexIndex * 4 + 0] = color.r;
+                m_pColorPointer[vertexIndex * 4 + 1] = color.g;
+                m_pColorPointer[vertexIndex * 4 + 2] = color.b;
                 m_pColorPointer[vertexIndex * 4 + 3] = vertexAlpha;
             } else {
-                const float u = (static_cast<float>(j) + 0.5f) / m_verticesPerPoint; // NOLINT(*-narrowing-conversions)
-                m_pTexCoords[vertexIndex] = tex2(u, static_cast<float>(i) / m_uNuPoints); // NOLINT(*-narrowing-conversions)
+                const float u = static_cast<float>(j) / (m_verticesPerPoint - 1);
+                m_pTexCoords[vertexIndex] = tex2(u, static_cast<float>(i) / m_uNuPoints);
                 m_pColorPointer[vertexIndex * 4 + 3] = vertexAlpha;
             }
         }
