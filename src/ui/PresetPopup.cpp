@@ -19,7 +19,7 @@ struct matjson::Serialize<std::vector<int>>
             if (!elem.isNumber()) {
                 return Err("Expected a number");
             }
-            result.push_back(elem.asInt().unwrapOrDefault());
+            result.push_back(elem.asInt().unwrapOrDefault()); // NOLINT(*-narrowing-conversions)
         }
         return Ok(result);
     }
@@ -135,6 +135,22 @@ bool PresetPopup::setupPresets()
         m_presetsMenu->updateLayout();
         m_presetButtons.push_back(btn);
     }
+
+    auto savedPreset = mod->getSavedValue<std::string>("preset");
+    for (const auto& btn : m_presetButtons)
+    {
+        auto presetObject = btn->getUserObject("preset");
+        auto presetString = typeinfo_cast<CCString*, CCObject*>(presetObject)->getCString();
+        if (presetString == savedPreset)
+        {
+            btn->toggle(true);
+            // btn->selected();
+            btn->m_notClickable = true;
+            btn->setClickable(false);
+            btn->updateSprite();
+        }
+    }
+
     return true;
 }
 

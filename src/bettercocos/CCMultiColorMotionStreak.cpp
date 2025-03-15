@@ -40,7 +40,7 @@ CCMultiColorMotionStreak* CCMultiColorMotionStreak::create(
     CCTexture2D* texture,
     bool disableBlending
 ) {
-    std::vector<ccColor3B> reversedColors(colors.rbegin(), colors.rend());
+    const std::vector<ccColor3B> reversedColors(colors.rbegin(), colors.rend());
     CCTexture2D* finalTexture = texture;
     if (disableBlending) {
         std::vector<GLubyte> texData;
@@ -50,7 +50,7 @@ CCMultiColorMotionStreak* CCMultiColorMotionStreak::create(
             texData.push_back(color.b);
             texData.push_back(255); // Force alpha to 255
         }
-        CCTexture2D* stripeTexture = new CCTexture2D();
+        const auto stripeTexture = new CCTexture2D();
         stripeTexture->initWithData(
             texData.data(),
             kCCTexture2DPixelFormat_RGBA8888,
@@ -65,10 +65,10 @@ CCMultiColorMotionStreak* CCMultiColorMotionStreak::create(
     }
 
     auto *pRet = new CCMultiColorMotionStreak();
-    if (pRet && pRet->initWithColors(fadeTime, minSeg, trailWidth, colors, finalTexture, disableBlending)) {
+    if (pRet->initWithColors(fadeTime, minSeg, trailWidth, colors, finalTexture, disableBlending)) {
         pRet->autorelease();
         pRet->setBlendingEnabled(!disableBlending);
-        pRet->setOpacity(opacity);
+        pRet->setOpacity(opacity); // NOLINT(*-narrowing-conversions)
         return pRet;
     }
     CC_SAFE_DELETE(pRet);
@@ -82,7 +82,7 @@ bool CCMultiColorMotionStreak::initWithColors(
     CCTexture2D* texture, bool disableBlending
 ) {
     // Use the provided texture (either user's or generated 1D texture)
-    if (!CCMotionStreak::initWithFade(fade, minSeg, stroke, {255, 255, 255}, texture))
+    if (!initWithFade(fade, minSeg, stroke, {255, 255, 255}, texture))
         return false;
 
     setStripeColors(colors);
@@ -130,28 +130,32 @@ void CCMultiColorMotionStreak::update(float delta) {
         CCPoint normal = ccp(-tangent.y, tangent.x);
 
         for (unsigned int j = 0; j < m_verticesPerPoint; j++) {
-            float factor = (static_cast<float>(j) / (m_verticesPerPoint - 1)) - 0.5f;
+            // lmk if it fixes the problem
+            // float factor = (static_cast<float>(j) / (m_verticesPerPoint - 1)) - 0.5f;
+            const float factor = ((static_cast<float>(j) + 0.5f) / m_verticesPerPoint) - 0.5f; // NOLINT(*-narrowing-conversions)
             CCPoint offset = ccpMult(normal, factor * m_fStroke);
-            CCPoint vertexPos = ccpAdd(m_pPointVertexes[i], offset);
+            const CCPoint vertexPos = ccpAdd(m_pPointVertexes[i], offset);
 
-            unsigned int vertexIndex = i * m_verticesPerPoint + j;
+            const unsigned int vertexIndex = i * m_verticesPerPoint + j;
             m_pVertices[vertexIndex] = { vertexPos.x, vertexPos.y };
-            m_pTexCoords[vertexIndex] = tex2(static_cast<float>(j) / (m_verticesPerPoint - 1),
-                                             static_cast<float>(i) / m_uNuPoints);
+            m_pTexCoords[vertexIndex] = tex2(static_cast<float>(j) / (m_verticesPerPoint - 1), // NOLINT(*-narrowing-conversions)
+                                             static_cast<float>(i) / m_uNuPoints); // NOLINT(*-narrowing-conversions)
 
-            // Compute fade factor: older points become more transparent
-            float fadeFactor = (m_uNuPoints > 1) ? (static_cast<float>(i) / (m_uNuPoints - 1)) : 1.0f;
-            GLubyte vertexAlpha = static_cast<GLubyte>(255 * fadeFactor);
+            // I'd have the trail fade out toward the tail instead
+            // float fadeFactor = (m_uNuPoints > 1) ? (static_cast<float>(i) / (m_uNuPoints - 1)) : 1.0f;
+            // GLubyte vertexAlpha = static_cast<GLubyte>(255 * fadeFactor);
+            const float fadeFactor = (m_uNuPoints > 1) ? (1.0f - static_cast<float>(i) / (m_uNuPoints - 1)) : 1.0f; // NOLINT(*-narrowing-conversions)
+            const auto vertexAlpha = static_cast<GLubyte>(255 * fadeFactor);
 
             if (m_blendingEnabled) {
-                ccColor3B color = m_stripeColors[j % m_stripeColors.size()];
-                m_pColorPointer[vertexIndex * 4 + 0] = color.r;
-                m_pColorPointer[vertexIndex * 4 + 1] = color.g;
-                m_pColorPointer[vertexIndex * 4 + 2] = color.b;
+                const auto [r, g, b] = m_stripeColors[j % m_stripeColors.size()];
+                m_pColorPointer[vertexIndex * 4 + 0] = r;
+                m_pColorPointer[vertexIndex * 4 + 1] = g;
+                m_pColorPointer[vertexIndex * 4 + 2] = b;
                 m_pColorPointer[vertexIndex * 4 + 3] = vertexAlpha;
             } else {
-                float u = (static_cast<float>(j) + 0.5f) / m_verticesPerPoint;
-                m_pTexCoords[vertexIndex] = tex2(u, static_cast<float>(i) / m_uNuPoints);
+                const float u = (static_cast<float>(j) + 0.5f) / m_verticesPerPoint; // NOLINT(*-narrowing-conversions)
+                m_pTexCoords[vertexIndex] = tex2(u, static_cast<float>(i) / m_uNuPoints); // NOLINT(*-narrowing-conversions)
                 m_pColorPointer[vertexIndex * 4 + 3] = vertexAlpha;
             }
         }
@@ -184,8 +188,8 @@ void CCMultiColorMotionStreak::draw() {
         std::vector<GLubyte> stripColors;
 
         for (unsigned int i = 0; i < m_uNuPoints; i++) {
-            int leftIndex = i * m_verticesPerPoint + stripe;
-            int rightIndex = leftIndex + 1;
+            const int leftIndex = i * m_verticesPerPoint + stripe; // NOLINT(*-narrowing-conversions)
+            const int rightIndex = leftIndex + 1;
 
             stripVertices.push_back(m_pVertices[leftIndex]);
             stripVertices.push_back(m_pVertices[rightIndex]);
