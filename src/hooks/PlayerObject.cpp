@@ -4,6 +4,7 @@
 #include "../colorTypes.hpp"
 #include "../utils/utils.hpp"
 #include "../utils/color.hpp"
+#include "../utils/PresetHandler.hpp"
 // This is included so we can actually get the setting, despite it thinking this is unused
 // ReSharper disable once CppUnusedIncludeDirective
 #include "../utils/customSettings.hpp"
@@ -33,32 +34,19 @@ class $modify(gErpaxdumjam4dumge, PlayerObject)
             return ret;
         } else
         {
-            // Preset name value is a string. Presets array can be fetched from the mod resources directory/presets.json.
-            std::filesystem::path presetsJson = Mod::get()->getResourcesDir() / "presets.json";
-            GEODE_DEBUG("Reading presets from {}", presetsJson.string());
-            // we read the file meow
-            std::ifstream file(presetsJson);
-            auto res = matjson::parse(file);
-            if (!res) {
-                GEODE_ERROR("Failed to parse presets.json! Oh no!");
+            auto presetObj = PresetHandler::get()->getPresets()[preset];
+            auto presetColors = presetObj.colors;
+            if (presetColors.empty()) {
+                GEODE_ERROR("Failed to fetch preset colors! Oh no!");
                 return {ccColor3B(255, 255, 255)};
             }
-            matjson::Value root = res.unwrapOr("Oops...");
-
-            // Get the preset colors, with the preset name being the key.
-            if (root == "Oops..." || !root.isObject()) {
-                GEODE_ERROR("Failed to parse preset root! Oh no!");
-                return {ccColor3B(255, 255, 255)};
-            }
-
-            auto presetColors = root[preset]["colors"];
             
             std::vector<ccColor3B> ret = {};
             for (size_t i = 0; i < presetColors.size(); i++) {
                 ccColor3B color = {
-                    static_cast<GLubyte>(presetColors[i][0].asInt().unwrapOrDefault()),
-                    static_cast<GLubyte>(presetColors[i][1].asInt().unwrapOrDefault()),
-                    static_cast<GLubyte>(presetColors[i][2].asInt().unwrapOrDefault())
+                    static_cast<GLubyte>(presetColors[i].r),
+                    static_cast<GLubyte>(presetColors[i].g),
+                    static_cast<GLubyte>(presetColors[i].b),
                 };
                 ret.push_back(color);
             }
