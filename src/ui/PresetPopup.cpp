@@ -1,5 +1,7 @@
 #include "PresetPopup.hpp"
 #include <matjson.hpp>
+#include "../utils/Keybinds.hpp"
+#include "../utils/PresetHandler.hpp"
 
 // What are you on to.
 #define GEODE_ERROR log::error
@@ -78,49 +80,23 @@ bool PresetPopup::setup()
 
 bool PresetPopup::setupPresets()
 {
-    auto mod = Mod::get();
-
-    std::filesystem::path presetsJson = mod->getResourcesDir() / "presets.json";
-
-    GEODE_DEBUG("Reading presets from {}", presetsJson.string());
-
-    // we read the file meow
-    std::ifstream file(presetsJson);
-
-    auto res = matjson::parse(file);
-    if (!res) {
-        GEODE_ERROR("Failed to parse presets.json! Oh no!");
-        return false;
-    }
-    matjson::Value root = res.unwrapOr("Oops...");
-    if (root == "Oops..." || !root.isObject()) {
-        GEODE_ERROR("Failed to parse preset root! Oh no!");
-        return false;
-    }
-
-    for (auto& [name, preset] : root)
+    for (auto& [name, preset] : PresetHandler::get()->getPresets())
     {
-        if (!preset.isObject()) {
-            GEODE_ERROR("Failed to parse a preset! Oh no!");
-            continue;
-        }
-
-        std::vector<int> accent = preset["accent"].as<std::vector<int>>().unwrapOrDefault();
 
         // Button creation code goes here
         auto lightSpr = ButtonSprite::create(name.c_str(), "bigFont.fnt", "geode.loader/white-square.png", .6f);
         auto darkSpr = ButtonSprite::create(name.c_str(), "bigFont.fnt", "geode.loader/white-square.png", .6f);
         // spr->setScale(.7f);
         // Slightly darken the color for readability
-        ccColor3B lighterColor = {
-            static_cast<GLubyte>(accent[0] * 0.8),
-            static_cast<GLubyte>(accent[1] * 0.8),
-            static_cast<GLubyte>(accent[2] * 0.8)
+        ccColor3B lighterColor =  {
+            static_cast<GLubyte>(preset.accent.r * .8), 
+            static_cast<GLubyte>(preset.accent.g * .8), 
+            static_cast<GLubyte>(preset.accent.b * .8),
         };
         ccColor3B darkerColor = {
-            static_cast<GLubyte>(accent[0] * 0.5),
-            static_cast<GLubyte>(accent[1] * 0.5),
-            static_cast<GLubyte>(accent[2] * 0.5)
+            static_cast<GLubyte>(preset.accent.r * .5), 
+            static_cast<GLubyte>(preset.accent.g * .5), 
+            static_cast<GLubyte>(preset.accent.b * .5),
         };
         lightSpr->m_BGSprite->setColor(lighterColor);
         darkSpr->m_BGSprite->setColor(darkerColor);
@@ -136,7 +112,7 @@ bool PresetPopup::setupPresets()
         m_presetButtons.push_back(btn);
     }
 
-    auto savedPreset = mod->getSavedValue<std::string>("preset");
+    auto savedPreset = Mod::get()->getSavedValue<std::string>("preset");
     for (const auto& btn : m_presetButtons)
     {
         auto presetObject = btn->getUserObject("preset");
