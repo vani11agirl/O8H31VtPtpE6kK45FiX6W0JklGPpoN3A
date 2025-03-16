@@ -12,6 +12,7 @@
 
 // What are you on to.
 #define GEODE_ERROR log::error
+#define GEODE_WARN log::warn
 #define GEODE_INFO log::info
 #define GEODE_DEBUG log::debug
 
@@ -74,6 +75,11 @@ class $modify(gErpaxdumjam4dumge, PlayerObject)
     void setupStreak() {
         PlayerObject::setupStreak();
 
+        // Should be it...
+        Loader::get()->queueInMainThread([this] {
+            if (auto pl = PlayLayer::get()) if (!(pl->m_player1 == this || pl->m_player2 == this)) return GEODE_WARN("Sorry...");
+        });
+        
         if (this->m_regularTrail) {
             this->m_regularTrail->removeFromParent();
             this->m_regularTrail = nullptr;
