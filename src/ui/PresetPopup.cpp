@@ -134,6 +134,7 @@ bool PresetPopup::setupPresets()
 // ReSharper disable once CppMemberFunctionMayBeStatic
 // ReSharper disable once CppMemberFunctionMayBeConst
 // can you shut up for once
+// i agree
 void PresetPopup::onSelection(CCObject* meow)
 {
     const auto target = as<CCMenuItemToggler*, CCObject*>(meow);

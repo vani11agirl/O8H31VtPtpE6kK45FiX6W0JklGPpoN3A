@@ -9,6 +9,7 @@
 - [ ] Properly implement disabling blending
 - [x] Deprecate string setting entry for preset in favor of custom UI
 - [ ] Fix custom colors (you cant use it rn)
+- [ ] Setup the actual keybind (the keybind system itself is done)
 
 ### Low Priority/Outright Unnecessary
 - [ ] Player renderer in popup for previewing

@@ -143,6 +143,11 @@
 				"slider": true,
 				"slider-step": 1.0
 			}
-		}
+		},
+		"trail-bind": {
+			"type": "custom:keybind",
+			"name": "Toggle Trail Keybind",
+			"default": 84
+		}	
 	}
 }
