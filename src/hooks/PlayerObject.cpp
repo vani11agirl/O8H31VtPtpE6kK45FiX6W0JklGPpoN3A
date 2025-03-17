@@ -20,13 +20,11 @@
 
 using namespace geode::prelude;
 
+// Global variable my beloved
+static bool cantBeWoke = false;
+
 class $modify(gErpaxdumjam4dumge, PlayerObject)
 {
-
-    struct Fields {
-        bool m_cantBeWoke = false;
-    };
-
     static void onModify(ModifyBase<ModifyDerive<gErpaxdumjam4dumge, PlayerObject>>& self) {
         (void)self.setHookPriorityAfterPost("PlayerObject::setupStreak", "hiimjustin000.more_icons");
     }
@@ -86,12 +84,12 @@ class $modify(gErpaxdumjam4dumge, PlayerObject)
 
 
     $override void activateStreak() {
-        if ( m_fields->m_cantBeWoke ) return GEODE_DEBUG(":pensive:");
+        if (cantBeWoke) return GEODE_DEBUG(":pensive:");
 
         log::debug("activateStreak() called");
         if (!levelFlipping() && !GameManager::sharedState()->m_editorEnabled && !m_isHidden) {
             m_fadeOutStreak = true;
-            if ( !m_fields->m_cantBeWoke ) m_regularTrail->resumeStroke();
+            if ( !cantBeWoke ) m_regularTrail->resumeStroke();
 
             if (m_isDart) {
                 m_waveTrail->m_currentPoint = getPosition();
@@ -123,6 +121,7 @@ class $modify(gErpaxdumjam4dumge, PlayerObject)
         auto newTrail = CCMultiColorMotionStreak::create(fastGetSetting<"fade-time", float>(), fastGetSetting<"min-seg", float>(), fastGetSetting<"trail-width", float>(), fastGetSetting<"opacity", int>(), stripeColors, texture, fastGetSetting<"disable-blending", bool>());
         newTrail->setID("new-trail"_spr);
         newTrail->m_fMaxSeg = fastGetSetting<"max-seg", float>();
+        if (cantBeWoke) newTrail->stopStroke();
 
         m_regularTrail = newTrail;
         m_regularTrail->retain();
@@ -130,15 +129,30 @@ class $modify(gErpaxdumjam4dumge, PlayerObject)
         if (auto parentLayer = m_parentLayer) parentLayer->addChild(m_regularTrail);
 
         log::info("new addr: 0x{}", fmt::ptr(m_regularTrail));
-
-        KeybindManager::get()->registerBind("trail-bind", [this]() {
-            if (m_regularTrail) {
-                m_fields->m_cantBeWoke = !m_fields->m_cantBeWoke;
-                if (m_fields->m_cantBeWoke) m_regularTrail->reset(); 
-                log::debug("status: {}", m_fields->m_cantBeWoke);
-            } else {
-                log::debug("oops...");
-            }
-        });
     }
 };
+
+$on_mod(Loaded) {
+    KeybindManager::get()->registerBind("trail-bind", []() {
+        cantBeWoke = !cantBeWoke;
+        if (auto pl = PlayLayer::get()) {
+            auto players = {pl->m_player1, pl->m_player2};
+            for (const auto& plr : players) {
+                if (!plr)
+                    continue;
+                if (plr->m_regularTrail) {
+                    if (!plr->m_regularTrail) return log::error("Trail not found!");
+                    else if (cantBeWoke) {
+                        plr->m_regularTrail->stopStroke();
+                        plr->m_regularTrail->reset();
+                    } else {
+                        plr->m_regularTrail->resumeStroke();
+                    }
+                    log::debug("status: {}", cantBeWoke);
+                } else {
+                    log::debug("oops...");
+                }
+            }
+        }
+    });
+}
