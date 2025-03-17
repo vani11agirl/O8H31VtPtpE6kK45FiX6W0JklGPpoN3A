@@ -83,3 +83,7 @@ SettingNodeV3 *ColorListSetting::createNode(float width) {
             shared_from_this()
     ), width);
 }
+
+$execute {
+    (void) Mod::get()->registerCustomSettingType("gaydient-colors", ColorListSetting::parse);
+}

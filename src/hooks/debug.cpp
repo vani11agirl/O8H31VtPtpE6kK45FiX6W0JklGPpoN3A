@@ -5,13 +5,14 @@
 // ReSharper disable CppMemberFunctionMayBeConst
 #include <Geode/Geode.hpp>
 #include <Geode/modify/PlayerObject.hpp>
-#if true
+#if false
 using namespace geode::prelude;
 
 class $modify(DebugPlayerObject, PlayerObject)
 {
     $override void resetStreak() {
         log::debug("using my own resetstreak impl");
+
         CCPoint pos = this->getPosition();
 
         if (!this->levelFlipping()) {

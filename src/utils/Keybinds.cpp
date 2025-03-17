@@ -70,14 +70,14 @@ std::string keyToString(enumKeyCodes key) {
     case KEY_Divide:    return "Div";
     case KEY_OEMPlus:   return "Plus";
     case KEY_OEMMinus:  return "Minus";
-    case CONTROLLER_LTHUMBSTICK_DOWN: return "L_THUMBSTICK_DOWN";
-    case CONTROLLER_LTHUMBSTICK_LEFT: return "L_THUMBSTICK_LEFT";
-    case CONTROLLER_LTHUMBSTICK_UP: return "L_THUMBSTICK_UP";
-    case CONTROLLER_LTHUMBSTICK_RIGHT: return "L_THUMBSTICK_RIGHT";
-    case CONTROLLER_RTHUMBSTICK_RIGHT: return "R_THUMBSTICK_RIGHT";
-    case CONTROLLER_RTHUMBSTICK_LEFT: return "L_THUMBSTICK_RIGHT";
-    case CONTROLLER_RTHUMBSTICK_DOWN: return "L_THUMBSTICK_DOWN";
-    case CONTROLLER_RTHUMBSTICK_UP: return "L_THUMBSTICK_UP";
+    case CONTROLLER_LTHUMBSTICK_DOWN:   return "L_THUMBSTICK_DOWN";
+    case CONTROLLER_LTHUMBSTICK_LEFT:   return "L_THUMBSTICK_LEFT";
+    case CONTROLLER_LTHUMBSTICK_UP:     return "L_THUMBSTICK_UP";
+    case CONTROLLER_LTHUMBSTICK_RIGHT:  return "L_THUMBSTICK_RIGHT";
+    case CONTROLLER_RTHUMBSTICK_RIGHT:  return "R_THUMBSTICK_RIGHT";
+    case CONTROLLER_RTHUMBSTICK_LEFT:   return "L_THUMBSTICK_RIGHT";
+    case CONTROLLER_RTHUMBSTICK_DOWN:   return "L_THUMBSTICK_DOWN";
+    case CONTROLLER_RTHUMBSTICK_UP:     return "L_THUMBSTICK_UP";
     case static_cast<enumKeyCodes>(-1): return "Unk";
     default: return CCKeyboardDispatcher::get()->keyToString(key);
   }

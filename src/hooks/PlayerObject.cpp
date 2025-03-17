@@ -5,6 +5,7 @@
 #include "../utils/utils.hpp"
 #include "../utils/color.hpp"
 #include "../utils/PresetHandler.hpp"
+#include "../utils/Keybinds.hpp"
 // This is included so we can actually get the setting, despite it thinking this is unused
 // ReSharper disable once CppUnusedIncludeDirective
 #include "../utils/customSettings.hpp"
@@ -21,6 +22,11 @@ using namespace geode::prelude;
 
 class $modify(gErpaxdumjam4dumge, PlayerObject)
 {
+
+    struct Fields {
+        bool m_cantBeWoke = false;
+    };
+
     static void onModify(ModifyBase<ModifyDerive<gErpaxdumjam4dumge, PlayerObject>>& self) {
         (void)self.setHookPriorityAfterPost("PlayerObject::setupStreak", "hiimjustin000.more_icons");
     }
@@ -59,8 +65,47 @@ class $modify(gErpaxdumjam4dumge, PlayerObject)
         }
     }
 
+    $override void resetStreak() {
+        log::debug("using my own resetstreak impl");
+        
+        CCPoint pos = this->getPosition();
+
+        if (!this->levelFlipping()) {
+            this->m_fadeOutStreak = true;
+            this->m_regularTrail->reset();
+
+            if (this->m_waveTrail) {
+                float waveOffsetX = -5.0f;
+                CCPoint wavePos = pos + CCPoint(waveOffsetX, 0.0f);
+
+                this->m_waveTrail->m_currentPoint = wavePos;
+                this->m_waveTrail->setPosition(pos);
+                this->m_waveTrail->setOpacity(255);
+                this->m_waveTrail->stopAllActions();
+            }
+        }
+    }
+
+
+    $override void activateStreak() {
+        if ( m_fields->m_cantBeWoke ) return GEODE_DEBUG(":pensive:");
+
+        log::debug("activateStreak() called");
+        if (!this->levelFlipping() && !GameManager::sharedState()->m_editorEnabled && !this->m_isHidden) {
+            this->m_fadeOutStreak = true;
+            this->m_regularTrail->resumeStroke();
+
+            if (this->m_isDart) {
+                m_waveTrail->m_currentPoint = this->getPosition();
+                m_waveTrail->stopAllActions();
+                m_waveTrail->setOpacity(255);
+                m_waveTrail->resumeStroke();
+            }
+        }
+    }
+
     // ReSharper disable once CppHidingFunction
-    void setupStreak() {
+    $override void setupStreak() {
         PlayerObject::setupStreak();
 
         // Should be it...
@@ -87,5 +132,16 @@ class $modify(gErpaxdumjam4dumge, PlayerObject)
         if (auto parentLayer = this->m_parentLayer) parentLayer->addChild(this->m_regularTrail);
 
         log::info("new addr: 0x{}", fmt::ptr(this->m_regularTrail));
+
+        KeybindManager::get()->registerBind("trail-bind", [this]() {
+            if (m_regularTrail) {
+                bool antiWoke = m_fields->m_cantBeWoke;
+                antiWoke = !antiWoke;
+                if (antiWoke) resetStreak(); 
+                log::debug("antiwoke status: {}", antiWoke);
+            } else {
+                log::debug("oops...");
+            }
+        });
     }
 };
