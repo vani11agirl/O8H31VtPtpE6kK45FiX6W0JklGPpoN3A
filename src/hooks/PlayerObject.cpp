@@ -67,21 +67,19 @@ class $modify(gErpaxdumjam4dumge, PlayerObject)
 
     $override void resetStreak() {
         log::debug("using my own resetstreak impl");
-        
-        CCPoint pos = this->getPosition();
 
-        if (!this->levelFlipping()) {
-            this->m_fadeOutStreak = true;
-            this->m_regularTrail->reset();
+        if (!levelFlipping()) {
+            m_fadeOutStreak = true;
+            m_regularTrail->reset();
 
-            if (this->m_waveTrail) {
+            if (m_waveTrail) {
                 float waveOffsetX = -5.0f;
-                CCPoint wavePos = pos + CCPoint(waveOffsetX, 0.0f);
+                CCPoint wavePos = getPosition() + CCPoint(waveOffsetX, 0.0f);
 
-                this->m_waveTrail->m_currentPoint = wavePos;
-                this->m_waveTrail->setPosition(pos);
-                this->m_waveTrail->setOpacity(255);
-                this->m_waveTrail->stopAllActions();
+                m_waveTrail->m_currentPoint = wavePos;
+                m_waveTrail->setPosition(getPosition());
+                m_waveTrail->setOpacity(255);
+                m_waveTrail->stopAllActions();
             }
         }
     }
@@ -91,12 +89,12 @@ class $modify(gErpaxdumjam4dumge, PlayerObject)
         if ( m_fields->m_cantBeWoke ) return GEODE_DEBUG(":pensive:");
 
         log::debug("activateStreak() called");
-        if (!this->levelFlipping() && !GameManager::sharedState()->m_editorEnabled && !this->m_isHidden) {
-            this->m_fadeOutStreak = true;
-            this->m_regularTrail->resumeStroke();
+        if (!levelFlipping() && !GameManager::sharedState()->m_editorEnabled && !m_isHidden) {
+            m_fadeOutStreak = true;
+            if ( !m_fields->m_cantBeWoke ) m_regularTrail->resumeStroke();
 
-            if (this->m_isDart) {
-                m_waveTrail->m_currentPoint = this->getPosition();
+            if (m_isDart) {
+                m_waveTrail->m_currentPoint = getPosition();
                 m_waveTrail->stopAllActions();
                 m_waveTrail->setOpacity(255);
                 m_waveTrail->resumeStroke();
@@ -113,9 +111,9 @@ class $modify(gErpaxdumjam4dumge, PlayerObject)
             if (auto pl = PlayLayer::get()) if (!(pl->m_player1 == this || pl->m_player2 == this)) return GEODE_WARN("Sorry...");
         });
         
-        if (this->m_regularTrail) {
-            this->m_regularTrail->removeFromParent();
-            this->m_regularTrail = nullptr;
+        if (m_regularTrail) {
+            m_regularTrail->removeFromParent();
+            m_regularTrail = nullptr;
         }
 
         std::vector<ccColor3B> stripeColors = colorsForPreset(Mod::get()->getSavedValue<std::string>("preset"));
@@ -126,19 +124,18 @@ class $modify(gErpaxdumjam4dumge, PlayerObject)
         newTrail->setID("new-trail"_spr);
         newTrail->m_fMaxSeg = fastGetSetting<"max-seg", float>();
 
-        this->m_regularTrail = newTrail;
-        this->m_regularTrail->retain();
+        m_regularTrail = newTrail;
+        m_regularTrail->retain();
 
-        if (auto parentLayer = this->m_parentLayer) parentLayer->addChild(this->m_regularTrail);
+        if (auto parentLayer = m_parentLayer) parentLayer->addChild(m_regularTrail);
 
-        log::info("new addr: 0x{}", fmt::ptr(this->m_regularTrail));
+        log::info("new addr: 0x{}", fmt::ptr(m_regularTrail));
 
         KeybindManager::get()->registerBind("trail-bind", [this]() {
             if (m_regularTrail) {
-                bool antiWoke = m_fields->m_cantBeWoke;
-                antiWoke = !antiWoke;
-                if (antiWoke) resetStreak(); 
-                log::debug("antiwoke status: {}", antiWoke);
+                m_fields->m_cantBeWoke = !m_fields->m_cantBeWoke;
+                if (m_fields->m_cantBeWoke) m_regularTrail->reset(); 
+                log::debug("status: {}", m_fields->m_cantBeWoke);
             } else {
                 log::debug("oops...");
             }
