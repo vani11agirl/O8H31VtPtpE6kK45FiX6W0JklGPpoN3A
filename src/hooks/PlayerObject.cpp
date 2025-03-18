@@ -94,7 +94,7 @@ class $modify(GTPlayerObject, PlayerObject)
             GEODE_DEBUG(":pensive:");
             return PlayerObject::activateStreak();
         }
-
+        
         log::debug("activateStreak() called");
         if (!levelFlipping() && !GameManager::sharedState()->m_editorEnabled && !m_isHidden) {
             m_fadeOutStreak = true;
@@ -134,6 +134,7 @@ class $modify(GTPlayerObject, PlayerObject)
         newTrail->m_fMaxSeg = fastGetSetting<"max-seg", float>();
         if (cantBeWoke) newTrail->stopStroke();
         else m_regularTrail->stopStroke();
+        m_streakStrokeWidth = fastGetSetting<"trail-width", float>();
 
         m_fields->m_wokeTrail = newTrail;
         m_fields->m_wokeTrail->retain();
