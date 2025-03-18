@@ -90,7 +90,10 @@ class $modify(GTPlayerObject, PlayerObject)
 
 
     $override void activateStreak() {
-        if (cantBeWoke) return GEODE_DEBUG(":pensive:");
+        if (cantBeWoke) {
+            GEODE_DEBUG(":pensive:");
+            return PlayerObject::activateStreak();
+        }
 
         log::debug("activateStreak() called");
         if (!levelFlipping() && !GameManager::sharedState()->m_editorEnabled && !m_isHidden) {
