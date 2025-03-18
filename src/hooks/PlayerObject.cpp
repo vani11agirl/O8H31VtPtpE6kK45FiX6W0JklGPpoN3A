@@ -10,6 +10,7 @@
 // ReSharper disable once CppUnusedIncludeDirective
 #include "../utils/customSettings.hpp"
 #include "ccTypes.h"
+#include "modify/Modify.hpp"
 #include <matjson.hpp>
 
 // What are you on to.
@@ -23,9 +24,13 @@ using namespace geode::prelude;
 // Global variable my beloved
 static bool cantBeWoke = false;
 
-class $modify(gErpaxdumjam4dumge, PlayerObject)
+class $modify(GTPlayerObject, PlayerObject)
 {
-    static void onModify(ModifyBase<ModifyDerive<gErpaxdumjam4dumge, PlayerObject>>& self) {
+    struct Fields {
+        CCMultiColorMotionStreak *m_wokeTrail = nullptr;
+    };
+
+    static void onModify(ModifyBase<ModifyDerive<GTPlayerObject, PlayerObject>>& self) {
         (void)self.setHookPriorityAfterPost("PlayerObject::setupStreak", "hiimjustin000.more_icons");
     }
 
@@ -68,6 +73,7 @@ class $modify(gErpaxdumjam4dumge, PlayerObject)
 
         if (!levelFlipping()) {
             m_fadeOutStreak = true;
+            m_fields->m_wokeTrail->reset();
             m_regularTrail->reset();
 
             if (m_waveTrail) {
@@ -89,7 +95,9 @@ class $modify(gErpaxdumjam4dumge, PlayerObject)
         log::debug("activateStreak() called");
         if (!levelFlipping() && !GameManager::sharedState()->m_editorEnabled && !m_isHidden) {
             m_fadeOutStreak = true;
-            if ( !cantBeWoke ) m_regularTrail->resumeStroke();
+            if ( !cantBeWoke ) m_fields->m_wokeTrail->resumeStroke();
+            else m_regularTrail->resumeStroke();
+
 
             if (m_isDart) {
                 m_waveTrail->m_currentPoint = getPosition();
@@ -100,19 +108,19 @@ class $modify(gErpaxdumjam4dumge, PlayerObject)
         }
     }
 
+    $override void update(float dt) {
+        PlayerObject::update(dt);
+
+        if (cantBeWoke) return;
+
+        if (m_fields->m_wokeTrail) {
+            m_fields->m_wokeTrail->setPosition(getPosition());
+        }
+    }
+
     // ReSharper disable once CppHidingFunction
     $override void setupStreak() {
         PlayerObject::setupStreak();
-
-        // Should be it...
-        Loader::get()->queueInMainThread([this] {
-            if (auto pl = PlayLayer::get()) if (!(pl->m_player1 == this || pl->m_player2 == this)) return GEODE_WARN("Sorry...");
-        });
-        
-        if (m_regularTrail) {
-            m_regularTrail->removeFromParent();
-            m_regularTrail = nullptr;
-        }
 
         std::vector<ccColor3B> stripeColors = colorsForPreset(Mod::get()->getSavedValue<std::string>("preset"));
 
@@ -122,36 +130,46 @@ class $modify(gErpaxdumjam4dumge, PlayerObject)
         newTrail->setID("new-trail"_spr);
         newTrail->m_fMaxSeg = fastGetSetting<"max-seg", float>();
         if (cantBeWoke) newTrail->stopStroke();
+        else m_regularTrail->stopStroke();
 
-        m_regularTrail = newTrail;
-        m_regularTrail->retain();
+        m_fields->m_wokeTrail = newTrail;
+        m_fields->m_wokeTrail->retain();
 
-        if (auto parentLayer = m_parentLayer) parentLayer->addChild(m_regularTrail);
+        if (auto parentLayer = m_parentLayer) parentLayer->addChild(newTrail);
 
-        log::info("new addr: 0x{}", fmt::ptr(m_regularTrail));
+        log::info("new addr: 0x{}", fmt::ptr(m_fields->m_wokeTrail));
     }
 };
 
 $on_mod(Loaded) {
     KeybindManager::get()->registerBind("trail-bind", []() {
         cantBeWoke = !cantBeWoke;
+        std::vector<GTPlayerObject *> players = {};
         if (auto pl = PlayLayer::get()) {
-            auto players = {pl->m_player1, pl->m_player2};
-            for (const auto& plr : players) {
-                if (!plr)
-                    continue;
-                if (plr->m_regularTrail) {
-                    if (!plr->m_regularTrail) return log::error("Trail not found!");
-                    else if (cantBeWoke) {
-                        plr->m_regularTrail->stopStroke();
-                        plr->m_regularTrail->reset();
-                    } else {
-                        plr->m_regularTrail->resumeStroke();
-                    }
-                    log::debug("status: {}", cantBeWoke);
+            players.push_back(static_cast<GTPlayerObject *>(pl->m_player1));
+            players.push_back(static_cast<GTPlayerObject *>(pl->m_player2));
+        }
+        if (auto ml = CCScene::get()->getChildByType<MenuLayer *>(0)) {
+            if (ml->m_menuGameLayer) players.push_back(static_cast<GTPlayerObject *>(ml->m_menuGameLayer->m_playerObject));
+        }
+        for (const auto& plr : players) {
+            if (!plr)
+                continue;
+            if (plr->m_regularTrail) {
+                if (cantBeWoke) {
+                    plr->m_fields->m_wokeTrail->stopStroke();
+                    // plr->m_fields->m_wokeTrail->reset();
+
+                    plr->m_regularTrail->resumeStroke();
                 } else {
-                    log::debug("oops...");
+                    plr->m_fields->m_wokeTrail->resumeStroke();
+
+                    plr->m_regularTrail->stopStroke();
+                    // plr->m_regularTrail->reset();
                 }
+                log::debug("status: {}", cantBeWoke);
+            } else {
+                log::debug("oops...");
             }
         }
     });
