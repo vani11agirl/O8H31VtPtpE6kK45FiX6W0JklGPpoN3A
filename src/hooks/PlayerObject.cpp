@@ -13,12 +13,6 @@
 #include "modify/Modify.hpp"
 #include <matjson.hpp>
 
-// What are you on to.
-#define GEODE_ERROR log::error
-#define GEODE_WARN log::warn
-#define GEODE_INFO log::info
-#define GEODE_DEBUG log::debug
-
 using namespace geode::prelude;
 
 // Global variable my beloved
@@ -47,7 +41,7 @@ class $modify(GTPlayerObject, PlayerObject)
             auto presetObj = PresetHandler::get()->getPresets()[preset];
             auto presetColors = presetObj.colors;
             if (presetColors.empty()) {
-                GEODE_ERROR("Failed to fetch preset colors! Oh no!");
+                log::error("Failed to fetch preset colors! Oh no!");
                 return {ccColor3B(255, 255, 255)};
             }
             
@@ -61,7 +55,7 @@ class $modify(GTPlayerObject, PlayerObject)
                 ret.push_back(color);
             }
             if (ret.empty()) {
-                GEODE_ERROR("Failed to parse preset colors! Oh no!");
+                log::error("Failed to parse preset colors! Oh no!");
                 return {ccColor3B(255, 255, 255)};
             }
             return ret;
@@ -69,11 +63,9 @@ class $modify(GTPlayerObject, PlayerObject)
     }
 
     $override void resetStreak() {
-        log::debug("using my own resetstreak impl");
-
         if (!levelFlipping()) {
             m_fadeOutStreak = true;
-            m_fields->m_wokeTrail->reset();
+            m_fields->m_wokeTrail->reset(); // just so that you don't comment this hook out, there's this midhook here
             m_regularTrail->reset();
 
             if (m_waveTrail) {
@@ -90,12 +82,9 @@ class $modify(GTPlayerObject, PlayerObject)
 
 
     $override void activateStreak() {
-        if (cantBeWoke) {
-            GEODE_DEBUG(":pensive:");
-            return PlayerObject::activateStreak();
-        }
+        if (cantBeWoke) return PlayerObject::activateStreak();
         
-        log::debug("activateStreak() called");
+        // log::debug("activateStreak() called");
         if (!levelFlipping() && !GameManager::sharedState()->m_editorEnabled && !m_isHidden) {
             m_fadeOutStreak = true;
             if ( !cantBeWoke ) m_fields->m_wokeTrail->resumeStroke();
@@ -114,7 +103,7 @@ class $modify(GTPlayerObject, PlayerObject)
     $override void update(float dt) {
         PlayerObject::update(dt);
 
-        if (cantBeWoke) return;
+        if (cantBeWoke) return; // DO NOT LOG, this is update after all
 
         if (m_fields->m_wokeTrail) {
             m_fields->m_wokeTrail->setPosition(getPosition());
@@ -134,14 +123,14 @@ class $modify(GTPlayerObject, PlayerObject)
         newTrail->m_fMaxSeg = fastGetSetting<"max-seg", float>();
         if (cantBeWoke) newTrail->stopStroke();
         else m_regularTrail->stopStroke();
-        m_streakStrokeWidth = fastGetSetting<"trail-width", float>();
+        // m_streakStrokeWidth = fastGetSetting<"trail-width", float>();
 
         m_fields->m_wokeTrail = newTrail;
         m_fields->m_wokeTrail->retain();
 
         if (auto parentLayer = m_parentLayer) parentLayer->addChild(newTrail);
 
-        log::info("new addr: 0x{}", fmt::ptr(m_fields->m_wokeTrail));
+        log::debug("woke made at 0x{}", fmt::ptr(m_fields->m_wokeTrail));
     }
 };
 
@@ -172,9 +161,9 @@ $on_mod(Loaded) {
                     // plr->m_regularTrail->reset();
                 }
                 log::debug("status: {}", cantBeWoke);
-            } else {
+            }/* else {
                 log::debug("oops...");
-            }
+            }*/
         }
     });
 }
