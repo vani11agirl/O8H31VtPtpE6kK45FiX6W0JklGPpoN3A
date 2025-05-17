@@ -32,26 +32,25 @@ class $modify(GTPlayerObject, PlayerObject)
     static std::vector<ccColor3B> colorsForPreset(const std::string& preset) {
         if (preset == "Custom") {
             std::vector<ccColor3B> ret = {};
-            auto colors = fastGetSetting<"stripe-colors", ColorList>().colors;
-            for (auto entry : colors) {
+            for (const auto colors = fastGetSetting<"stripe-colors", ColorList>().colors; const auto& entry : colors) {
                 ret.push_back(custom::utils::color::ColorUtils::hexToColor3B(entry.m_hex));
             }
             return ret;
         } else
         {
-            auto presetObj = PresetHandler::get()->getPresets()[preset];
-            auto presetColors = presetObj.colors;
+            const auto presetObj = PresetHandler::get()->getPresets()[preset];
+            const auto presetColors = presetObj.colors;
             if (presetColors.empty()) {
                 log::error("Failed to fetch preset colors! Oh no!");
                 return {ccc3(255, 255, 255)};
             }
             
             std::vector<ccColor3B> ret = {};
-            for (size_t i = 0; i < presetColors.size(); i++) {
+            for (auto [r, g, b] : presetColors) {
                 ccColor3B color = {
-                    static_cast<GLubyte>(presetColors[i].r),
-                    static_cast<GLubyte>(presetColors[i].g),
-                    static_cast<GLubyte>(presetColors[i].b),
+                    static_cast<GLubyte>(r),
+                    static_cast<GLubyte>(g),
+                    static_cast<GLubyte>(b),
                 };
                 ret.push_back(color);
             }
@@ -70,8 +69,8 @@ class $modify(GTPlayerObject, PlayerObject)
             m_regularTrail->reset();
 
             if (m_waveTrail) {
-                float waveOffsetX = -5.0f;
-                CCPoint wavePos = getPosition() + CCPoint(waveOffsetX, 0.0f);
+                constexpr float waveOffsetX = -5.0f;
+                const CCPoint wavePos = getPosition() + CCPoint(waveOffsetX, 0.0f);
 
                 m_waveTrail->m_currentPoint = wavePos;
                 m_waveTrail->setPosition(getPosition());
@@ -114,11 +113,11 @@ class $modify(GTPlayerObject, PlayerObject)
     $override void setupStreak() {
         PlayerObject::setupStreak();
 
-        std::vector<ccColor3B> stripeColors = colorsForPreset(Mod::get()->getSavedValue<std::string>("preset"));
+        const std::vector<ccColor3B> stripeColors = colorsForPreset(Mod::get()->getSavedValue<std::string>("preset"));
 
-        auto texture = CCTextureCache::sharedTextureCache()->addImage("streak_05_001.png", true);
+        const auto texture = CCTextureCache::sharedTextureCache()->addImage("streak_05_001.png", true);
 
-        auto newTrail = CCMultiColorMotionStreak::create(fastGetSetting<"fade-time", float>(), fastGetSetting<"min-seg", float>(), fastGetSetting<"trail-width", float>(), fastGetSetting<"opacity", int>(), stripeColors, texture, fastGetSetting<"disable-blending", bool>());
+        const auto newTrail = CCMultiColorMotionStreak::create(fastGetSetting<"fade-time", float>(), fastGetSetting<"min-seg", float>(), fastGetSetting<"trail-width", float>(), fastGetSetting<"opacity", int>(), stripeColors, texture, fastGetSetting<"disable-blending", bool>());
         newTrail->setID("new-trail"_spr);
         newTrail->m_fMaxSeg = fastGetSetting<"max-seg", float>();
         if (cantBeWoke) newTrail->stopStroke();
@@ -128,9 +127,9 @@ class $modify(GTPlayerObject, PlayerObject)
         m_fields->m_wokeTrail = newTrail;
         m_fields->m_wokeTrail->retain();
 
-        if (auto parentLayer = m_parentLayer) parentLayer->addChild(newTrail);
+        if (const auto parentLayer = m_parentLayer) parentLayer->addChild(newTrail);
 
-        log::debug("woke made at 0x{}", fmt::ptr(m_fields->m_wokeTrail));
+        log::debug("New trail made at address 0x{}", fmt::ptr(m_fields->m_wokeTrail));
     }
 };
 
@@ -138,12 +137,12 @@ $on_mod(Loaded) {
     KeybindManager::get()->registerBind("trail-bind", []() {
         cantBeWoke = !cantBeWoke;
         std::vector<GTPlayerObject *> players = {};
-        if (auto pl = PlayLayer::get()) {
-            players.push_back(static_cast<GTPlayerObject *>(pl->m_player1));
-            players.push_back(static_cast<GTPlayerObject *>(pl->m_player2));
+        if (const auto pl = PlayLayer::get()) {
+            players.push_back(typeinfo_cast<GTPlayerObject *>(pl->m_player1));
+            players.push_back(typeinfo_cast<GTPlayerObject *>(pl->m_player2));
         }
-        if (auto ml = CCScene::get()->getChildByType<MenuLayer *>(0)) {
-            if (ml->m_menuGameLayer) players.push_back(static_cast<GTPlayerObject *>(ml->m_menuGameLayer->m_playerObject));
+        if (const auto ml = CCScene::get()->getChildByType<MenuLayer *>(0)) {
+            if (ml->m_menuGameLayer) players.push_back(typeinfo_cast<GTPlayerObject *>(ml->m_menuGameLayer->m_playerObject));
         }
         for (const auto& plr : players) {
             if (!plr)
