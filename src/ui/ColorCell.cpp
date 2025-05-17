@@ -198,7 +198,7 @@ bool ColorCell::init(ColorPopup *parent_popup, ColorEntry *entry, const CCSize &
             if (str.length() == 7)
             {
                 ccColor3B newColor = ColorUtils::hexToColor3B(str);
-                if (auto bgSprite = dynamic_cast<CCScale9Sprite*>(this->getChildByID("bg"_spr)))
+                if (auto bgSprite = typeinfo_cast<CCScale9Sprite*>(this->getChildByID("bg"_spr)))
                 {
                     bgSprite->setColor(newColor);
                 }
