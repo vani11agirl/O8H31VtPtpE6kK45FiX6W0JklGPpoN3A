@@ -92,7 +92,7 @@ jobs:
   build:
     needs: ['magic-touches']
     strategy:
-      fail-fast: false
+      fail-fast: false # Nevermind.
       matrix:
         config:
           - name: Windows
