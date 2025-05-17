@@ -43,7 +43,7 @@ class $modify(GTPlayerObject, PlayerObject)
             auto presetColors = presetObj.colors;
             if (presetColors.empty()) {
                 log::error("Failed to fetch preset colors! Oh no!");
-                return {ccColor3B(255, 255, 255)};
+                return {ccc3(255, 255, 255)};
             }
             
             std::vector<ccColor3B> ret = {};
@@ -57,7 +57,7 @@ class $modify(GTPlayerObject, PlayerObject)
             }
             if (ret.empty()) {
                 log::error("Failed to parse preset colors! Oh no!");
-                return {ccColor3B(255, 255, 255)};
+                return {ccc3(255, 255, 255)};
             }
             return ret;
         }
