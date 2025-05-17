@@ -144,6 +144,12 @@
 				"slider-step": 1.0
 			}
 		},
+		"super-scary": {
+			"name": "Multiply Trail Creation",
+			"description": "[Experimental] May cause performance issues and extra memory usage, use with caution.",
+			"type": "bool",
+			"default": false
+		},
 		"trail-bind": {
 			"type": "custom:keybind",
 			"name": "Toggle Trail Keybind",

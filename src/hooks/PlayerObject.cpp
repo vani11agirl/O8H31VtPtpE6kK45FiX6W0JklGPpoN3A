@@ -1,3 +1,4 @@
+// ReSharper disable CppHidingFunction
 #include "../bettercocos/CCMultiColorMotionStreak.hpp"
 #include <Geode/modify/PlayerObject.hpp>
 #include <Geode/Geode.hpp>
@@ -98,9 +99,7 @@ class $modify(GTPlayerObject, PlayerObject)
         log::debug("activateStreak() called");
         if (!levelFlipping() && !GameManager::sharedState()->m_editorEnabled && !m_isHidden) {
             m_fadeOutStreak = true;
-            if ( !cantBeWoke ) m_fields->m_wokeTrail->resumeStroke();
-            else m_regularTrail->resumeStroke();
-
+            m_fields->m_wokeTrail->resumeStroke();
 
             if (m_isDart) {
                 m_waveTrail->m_currentPoint = getPosition();
@@ -111,7 +110,8 @@ class $modify(GTPlayerObject, PlayerObject)
         }
     }
 
-    $override void update(float dt) {
+    $override void update(const float dt) override
+    {
         PlayerObject::update(dt);
 
         if (cantBeWoke) return;

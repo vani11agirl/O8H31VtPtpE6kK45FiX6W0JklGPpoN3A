@@ -16,7 +16,7 @@ public:
 
     static CCMultiColorMotionStreak* create(float fade, float minSeg, float trailWidth, float opacity,
                                             const std::vector<ccColor3B>& colors,
-                                            CCTexture2D* texture, bool disableBlending);
+                                            CCTexture2D* texture, bool disableBlending, bool doUnspeakableThings = false);
 
     bool initWithColors(float fade, float minSeg, float stroke,
                         const std::vector<ccColor3B>& colors,
@@ -26,11 +26,14 @@ public:
     void setBlendingEnabled(bool enabled);
     virtual void update(float delta) override;
     void draw() override;
-
-protected:
     std::vector<ccColor3B> m_stripeColors;
-    unsigned int m_verticesPerPoint;
     bool m_blendingEnabled;
+    bool m_doUnspeakableThings;
+protected:
+
+    unsigned int m_verticesPerPoint;
+
+
 };
 
 #endif // __CC_MULTI_COLOR_MOTION_STREAK_H__
