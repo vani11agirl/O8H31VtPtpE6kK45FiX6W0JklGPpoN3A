@@ -1,0 +1,148 @@
+{
+	"geode": "4.9.0",
+	"gd": {
+		"win": "2.2074",
+		"android": "2.2074",
+		"mac": "2.2074",
+		"ios": "2.2074"
+	},
+	"id": "vanillagirl.geometrail",
+	"name": "Geometrail",
+	"version": "v0.0.2",
+	"developers": ["vanillagirl", "km7dev"],
+	"description": "celestrail port for gd real",
+	"tags": [
+		"offline",
+		"customization",
+		"enhancement"
+	],
+	"resources": {
+		"fonts": {
+			"JetBrainsMono": {
+				"path": "resources/JetBrainsMono-Medium.ttf",
+				"size": 64
+			}
+		},
+		"sprites": [
+			"resources/*.png"
+		],
+		"files": [
+			"resources/presets.json"
+		]
+	},
+	"links": {
+		"source": "https://github.com/AnhNguyenlost13/better-pride-trails"
+	},
+	"settings": {
+		"trail-settings": {
+			"type": "title",
+			"name": "Trail Settings",
+			"description": "These, well... allows you to change the trail parameters to your liking."
+		},
+		"fade-time": {
+			"name": "Fade Time",
+			"description": "Duration for the fade effect (in seconds). This is also the trail length until I properly work on it.",
+			"type": "float",
+			"default": 0.3,
+			"min": 0.1,
+			"max": 1.0,
+			"control": {
+				"slider": true,
+				"slider-step": 0.1
+			}
+		},
+		"trail-width": {
+			"name": "Trail Width",
+			"description": "Width of the trail. Currently doesn't work properly",
+			"type": "float",
+			"default": 10.0,
+			"min": 0.1,
+			"max": 30.0,
+			"control": {
+				"slider": true,
+				"slider-step": 0.5
+			}
+		},
+		"trail-opacity": {
+			"name": "Trail Opacity",
+			"description": "Opacity of the trail (0 = transparent, 255 = opaque).",
+			"type": "int",
+			"default": 255,
+			"min": 0,
+			"max": 255,
+			"control": {
+				"slider": true,
+				"slider-step": 5
+			}
+		},
+		"disable-blending": {
+			"name": "Disable Blending (Experimental)",
+			"description": "Attempts to disable blending by changing the blending algorithm.",
+			"type": "bool",
+			"default": true
+		},
+		"stripe-colors": {
+			"name": "(Custom) Stripe Colors",
+			"description": "A list of colors for the trail, maximum 7.",
+			"type": "custom:gaydient-colors",
+			"enable-if": "saved:enable-custom",
+			"enable-if-description": "Set the preset as custom first.",
+			"default": [
+				{
+					"hex": "#5BCEFA",
+					"enabled": true,
+					"userAdded": true
+				},
+				{
+					"hex": "#F5A9B8",
+					"enabled": true,
+					"userAdded": true
+				},
+				{
+					"hex": "#FFFFFF",
+					"enabled": true,
+					"userAdded": true
+				},
+				{
+					"hex": "#F5A9B8",
+					"enabled": true,
+					"userAdded": true
+				},
+				{
+					"hex": "#5BCEFA",
+					"enabled": true,
+					"userAdded": true
+				}
+			]
+		},
+		"debugging": {
+			"type": "title",
+			"name": "Developer Options",
+			"description": "These are provided for debugging. Only change these if you know what you're doing."
+		},
+		"min-seg": {
+			"name": "Minimum Segment Length",
+			"description": "Minimum distance between points in the trail. You probably do not need to change this.",
+			"type": "float",
+			"default": 5.0,
+			"min": 0.1,
+			"max": 50.0,
+			"control": {
+				"slider": true,
+				"slider-step": 0.1
+			}
+		},
+		"max-seg": {
+			"name": "Maximum Segment Length",
+			"description": "Maximum distance between points in the trail. Again, you probably do not need to change this.",
+			"type": "float",
+			"default": 50.0,
+			"min": 25.0,
+			"max": 100.0,
+			"control": {
+				"slider": true,
+				"slider-step": 1.0
+			}
+		}
+	}
+}
