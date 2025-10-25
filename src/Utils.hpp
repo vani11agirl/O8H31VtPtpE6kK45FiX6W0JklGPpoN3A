@@ -2,6 +2,8 @@
 
 #include <Geode/utils/string.hpp>
 
+using namespace geode::prelude;
+
 template <geode::utils::string::ConstexprString S, typename T>
 T const& getSettingFast() {
     static T value = (
@@ -12,3 +14,9 @@ T const& getSettingFast() {
     );
     return value;
 }
+
+CCTexture2D* createTextureFromColors(std::vector<ccColor3B> const& colors);
+CCTexture2D* createTextureFromColors(std::vector<std::string> const& colors);
+
+std::vector<ccColor3B> hexToColorList(std::vector<std::string> const& colors);
+std::vector<std::string> colorToHexList(std::vector<ccColor3B> const& colors);

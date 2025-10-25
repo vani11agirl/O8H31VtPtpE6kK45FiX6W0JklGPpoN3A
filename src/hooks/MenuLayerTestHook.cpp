@@ -1,5 +1,6 @@
 #include "../nodes/ColorStreak.hpp"
 #include "../Utils.hpp"
+#include "../settings/ColorSetting.hpp"
 
 using namespace geode::prelude;
 
@@ -11,13 +12,7 @@ class $modify(M, MenuLayer) {
 
     bool init() {
         if (!MenuLayer::init()) return false;
-        auto streak = ColorStreak::create(getSettingFast<"fade-time", float>(), getSettingFast<"min-seg", float>(), getSettingFast<"trail-width", float>(), {
-            {91, 206, 250},
-            {245, 169, 184},
-            {255, 255, 255},
-            {245, 169, 184},
-            {91, 206, 250},
-        });
+        auto streak = ColorStreak::create(getSettingFast<"fade-time", float>(), getSettingFast<"min-seg", float>(), getSettingFast<"trail-width", float>(), getSettingFast<"stripe-colors", std::vector<std::string>>());
         if (!streak) return true;
 
         addChild(streak);
@@ -31,5 +26,7 @@ class $modify(M, MenuLayer) {
 
     void sched(float dt) {
         m_fields->streak->setPosition(m_menuGameLayer->m_playerObject->getPosition());
+        m_menuGameLayer->m_playerObject->m_regularTrail->stopStroke();
+        m_menuGameLayer->m_playerObject->m_waveTrail->stopStroke();
     }
 };

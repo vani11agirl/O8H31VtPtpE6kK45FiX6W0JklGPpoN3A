@@ -1,5 +1,7 @@
 #include "ColorStreak.hpp"
 
+#include "../Utils.hpp"
+
 unsigned int* getNumberOfDraws() {
 #ifdef GEODE_IS_MACOS
     static_assert(GEODE_COMP_GD_VERSION == 22074, "Please update macOS offsets!");
@@ -24,23 +26,7 @@ bool ColorStreak::initWithColors(float fade, float minSeg, float stroke, const s
     if (colors.empty()) return false;
     m_colors = colors;
 
-    int w = static_cast<int>(colors.size());
-    std::vector<GLubyte> data(w * 4);
-
-    for (int i = 0; i < w; ++i) {
-        const auto& c = colors[w - 1 - i];
-        data[i * 4 + 0] = c.r;
-        data[i * 4 + 1] = c.g;
-        data[i * 4 + 2] = c.b;
-        data[i * 4 + 3] = 255;
-    }
-
-    m_texture = new CCTexture2D();
-    m_texture->initWithData(data.data(), kCCTexture2DPixelFormat_RGBA8888, w, 1, CCSize{static_cast<float>(w), 1});
-
-    ccTexParams params = {GL_NEAREST, GL_NEAREST, GL_CLAMP_TO_EDGE, GL_CLAMP_TO_EDGE};
-    m_texture->setTexParameters(&params);
-    m_texture->autorelease();
+    m_texture = createTextureFromColors(colors);
 
     if (!initWithFade(fade, minSeg, stroke, ccWHITE, m_texture)) return false;
     setPosition({0, 0});
@@ -78,6 +64,16 @@ void ColorStreak::draw()
 ColorStreak* ColorStreak::create(float fade, float minSeg, float stroke, const std::vector<ccColor3B>& colors) {
     auto ret = new ColorStreak();
     if (!ret->initWithColors(fade, minSeg, stroke, colors)) {
+        delete ret;
+        return nullptr;
+    }
+    ret->autorelease();
+    return ret;
+}
+
+ColorStreak* ColorStreak::create(float fade, float minSeg, float stroke, const std::vector<std::string>& colors) {
+    auto ret = new ColorStreak();
+    if (!ret->initWithColors(fade, minSeg, stroke, hexToColorList(colors))) {
         delete ret;
         return nullptr;
     }

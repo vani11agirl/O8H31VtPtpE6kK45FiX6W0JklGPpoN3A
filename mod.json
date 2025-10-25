@@ -82,37 +82,15 @@
 			"default": true
 		},
 		"stripe-colors": {
-			"name": "(Custom) Stripe Colors",
+			"name": "Stripe Colors",
 			"description": "A list of colors for the trail, maximum 7.",
-			"type": "custom:gaydient-colors",
-			"enable-if": "saved:enable-custom",
-			"enable-if-description": "Set the preset as custom first.",
+			"type": "custom:color-setting",
 			"default": [
-				{
-					"hex": "#5BCEFA",
-					"enabled": true,
-					"userAdded": true
-				},
-				{
-					"hex": "#F5A9B8",
-					"enabled": true,
-					"userAdded": true
-				},
-				{
-					"hex": "#FFFFFF",
-					"enabled": true,
-					"userAdded": true
-				},
-				{
-					"hex": "#F5A9B8",
-					"enabled": true,
-					"userAdded": true
-				},
-				{
-					"hex": "#5BCEFA",
-					"enabled": true,
-					"userAdded": true
-				}
+				"#5BCEFA",
+				"#F5A9B8",
+				"#FFFFFF",
+				"#F5A9B8",
+				"#5BCEFA"
 			]
 		},
 		"debugging": {

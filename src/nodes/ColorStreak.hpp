@@ -14,4 +14,5 @@ public:
     GLubyte getOpacity() override;
 
     static ColorStreak* create(float fade, float minSeg, float stroke, const std::vector<ccColor3B>& colors);
+    static ColorStreak* create(float fade, float minSeg, float stroke, const std::vector<std::string>& colors);
 };
