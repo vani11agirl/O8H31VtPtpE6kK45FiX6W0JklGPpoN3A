@@ -1,4 +1,4 @@
-# Placeholder Mod Name
+# This mod is currently undergoing a [rewrite](https://github.com/vani11agirl/O8H31VtPtpE6kK45FiX6W0JklGPpoN3A/tree/rewrite).
 
 ## TODO:
 - [x] Fix color pick popup
