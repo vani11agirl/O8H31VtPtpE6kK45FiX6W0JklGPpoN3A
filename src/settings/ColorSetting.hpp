@@ -1,3 +1,5 @@
+#pragma once
+
 #include <Geode/loader/SettingV3.hpp>
 
 using namespace geode::prelude;

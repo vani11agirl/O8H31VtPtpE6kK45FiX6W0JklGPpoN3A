@@ -1,5 +1,6 @@
 #include "ColorSetting.hpp"
 
+#include "ColorListPopup.hpp"
 #include "../Utils.hpp"
 
 bool ColorSettingNode::init(std::shared_ptr<ColorSettingValue> setting, float width) {
@@ -12,8 +13,8 @@ bool ColorSettingNode::init(std::shared_ptr<ColorSettingValue> setting, float wi
     m_sprite->setPosition(getButtonMenu()->getPosition() - CCPoint{getButtonMenu()->getContentWidth() / 2 - 3.5f, 0});
     this->addChild(m_sprite);
 
-    auto btn = CCMenuItemExt::createSpriteExtra(ButtonSprite::create("Edit"), [](auto) {
-
+    auto btn = CCMenuItemExt::createSpriteExtra(ButtonSprite::create("Edit"), [this](auto) {
+        ColorListPopup::create(this)->show();
     });
     this->getButtonMenu()->addChild(btn);
     this->getButtonMenu()->setContentWidth(40);

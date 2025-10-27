@@ -1,6 +1,7 @@
 #include "../nodes/ColorStreak.hpp"
 #include "../Utils.hpp"
-#include "../settings/ColorSetting.hpp"
+// ReSharper disable once CppUnusedIncludeDirective
+#include "../settings/ColorSetting.hpp" // included for serialization
 
 using namespace geode::prelude;
 
