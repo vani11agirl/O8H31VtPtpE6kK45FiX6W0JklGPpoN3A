@@ -10,7 +10,7 @@
 	"name": "Geometrail",
 	"version": "v0.0.2",
 	"developers": ["vanillagirl", "km7dev"],
-	"description": "celestrail port for gd real",
+	"description": "Custom pride flag trails, inspired by the Celestrail mod.",
 	"tags": [
 		"offline",
 		"customization",
@@ -37,7 +37,7 @@
 		"trail-settings": {
 			"type": "title",
 			"name": "Trail Settings",
-			"description": "These, well... allows you to change the trail parameters to your liking."
+			"description": "These settings allow you to change the trail parameters to your liking."
 		},
 		"fade-time": {
 			"name": "Fade Time",
@@ -53,7 +53,7 @@
 		},
 		"trail-width": {
 			"name": "Trail Width",
-			"description": "Width of the trail. Currently doesn't work properly",
+			"description": "Width of the trail.",
 			"type": "float",
 			"default": 10.0,
 			"min": 0.1,
@@ -96,7 +96,7 @@
 		"debugging": {
 			"type": "title",
 			"name": "Developer Options",
-			"description": "These are provided for debugging. Only change these if you know what you're doing."
+			"description": "These are provided for debugging. Only change these if you know what you're doing. These settings may be removed in future versions."
 		},
 		"min-seg": {
 			"name": "Minimum Segment Length",
