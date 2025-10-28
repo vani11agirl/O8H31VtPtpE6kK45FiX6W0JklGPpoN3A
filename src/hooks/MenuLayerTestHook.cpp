@@ -15,8 +15,8 @@ class $modify(M, MenuLayer) {
         if (!MenuLayer::init()) return false;
         auto streak = ColorStreak::create(getSettingFast<"fade-time", float>(), getSettingFast<"min-seg", float>(), getSettingFast<"trail-width", float>(), getSettingFast<"stripe-colors", std::vector<std::string>>());
         if (!streak) return true;
-
-        addChild(streak);
+        streak->setZOrder(m_menuGameLayer->m_playerObject->m_regularTrail->getZOrder());
+        m_menuGameLayer->addChild(streak);
         m_fields->streak = streak;
         streak->setOpacity(getSettingFast<"trail-opacity", int>());
 
